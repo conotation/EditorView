@@ -27,6 +27,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        binding.btnStudioRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cf.removeCard();
+            }
+        });
+
         binding.btnStudioAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {       // + 테스트 버튼
@@ -48,9 +55,16 @@ public class MainActivity extends AppCompatActivity {
                         return true;
                     }
                 });
-                cf.addView(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                cf.addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 //                InnerTV tv = new InnerTV(getApplicationContext());
 
+            }
+        });
+
+        binding.btnStudioPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cf.setCardBackground();
             }
         });
 

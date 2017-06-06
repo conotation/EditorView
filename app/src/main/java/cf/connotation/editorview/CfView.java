@@ -7,10 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -20,26 +21,29 @@ import java.util.ArrayList;
 
 public class CfView extends FrameLayout {
     final private String TAG = "CfView";
-    private ArrayList viewList = new ArrayList();
+    private ArrayList cardList = new ArrayList<>();
     private boolean flag = false;
     private boolean lock = true;
     private Context cv;
 
-    private View presView = null;
+    private View currentView = null;
 
     public CfView(@NonNull Context context) {
         super(context);
         cv = context;
+
     }
 
     public CfView(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         cv = context;
+
     }
 
     public CfView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         cv = context;
+
     }
 
 
@@ -48,20 +52,19 @@ public class CfView extends FrameLayout {
 //        Log.e(TAG, "onTouchEvent: " + event.getAction());
         switch (event.getAction()) {
             case 0:
-                if (presView != null)
-                    Log.e(TAG, "onTouchEvent: moveStart");
+                setFlag(false);
                 break;
 
-            case 1:
-                this.setFlag(false);
-                break;
+//            case 1:       // 추후 좌표값으로 수정해야될듯
+//                setFlag(false);
+//                break;
 
             case 2:
-                if (presView != null) {
-                    presView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-                    presView.setX(event.getX() - presView.getMeasuredWidth() / 2);
-                    presView.setY(event.getY() - presView.getMeasuredHeight() / 2);
-                }
+                if (currentView == null)
+                    return false;
+                currentView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+                currentView.setX(event.getX() - currentView.getMeasuredWidth() / 2);
+                currentView.setY(event.getY() - currentView.getMeasuredHeight() / 2);
                 break;
         }
         return true;
@@ -69,32 +72,28 @@ public class CfView extends FrameLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (lock)
-            return false;
-        return flag;
+        return !lock && flag;
     }
 
-    @Override
-    public void addView(View child) {
-        super.addView(child);
-        viewList.add(child);
-        Log.e(TAG, "viewList: " + viewList.size());
+    public void addCard(View child, ViewGroup.LayoutParams layoutParams) {
+        addView(child, layoutParams);
+        cardList.add(child);
     }
 
     public void setFlag(boolean b) {
         flag = b;
-        if (presView != null)
-            presView.setBackgroundColor(Color.argb(0, 0, 0, 0));
-        presView = null;
+        if (currentView != null)
+            currentView.setBackgroundColor(Color.argb(0, 0, 0, 0));
+        currentView = null;
     }
 
     public void setFlag(boolean b, View tv) {
         flag = b;
         if (b) {
-            presView = tv;
-            presView.setBackground(ContextCompat.getDrawable(cv, R.drawable.xml_tv_border));
+            currentView = tv;
+            currentView.setBackground(ContextCompat.getDrawable(cv, R.drawable.xml_tv_border));
         } else {
-            presView = null;
+            currentView = null;
         }
     }
 
@@ -104,10 +103,31 @@ public class CfView extends FrameLayout {
 
     public void setLocked() {
         lock = !lock;
+        setFlag(false);
     }
 
     public boolean getLocked() {
         return lock;
+    }
+
+    public void removeCard() {
+        if (currentView == null) {  // 현재 선택된 뷰가 없음
+            Toast.makeText(cv, "카드를 선택해주세요", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        for (int i = 0; i < cardList.size(); i++) {
+            if (currentView.getId() == ((View) cardList.get(i)).getId()) {
+                removeView(currentView);
+                setFlag(false);
+                cardList.remove(i);
+                return;
+            }
+        }
+        Toast.makeText(cv, "참조 실패", Toast.LENGTH_SHORT).show();
+    }
+
+    public void setCardBackground(){
+        // TODO: 추가바람 ㅎ
     }
 
 }
