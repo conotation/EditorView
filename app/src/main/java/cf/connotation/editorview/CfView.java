@@ -128,6 +128,8 @@ public class CfView extends FrameLayout {
 
     public void setCardBackground(){
         // TODO: 추가바람 ㅎ
+        ((MainActivity) cv).goToAlbum();
     }
+
 
 }
