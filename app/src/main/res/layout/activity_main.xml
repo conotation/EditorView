@@ -23,6 +23,13 @@
                 android:layout_weight="19"
                 android:background="#8866ff">
 
+                <com.yalantis.ucrop.view.TransformImageView
+                    android:layout_width="match_parent"
+                    android:background="#fff"
+                    android:scaleType="center"
+                    android:id="@+id/tfv"
+                    android:layout_height="match_parent" />
+
 
             </cf.connotation.editorview.CfView>
 

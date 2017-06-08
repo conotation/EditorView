@@ -1,7 +1,10 @@
 package cf.connotation.editorview;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.os.Environment;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,8 +14,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.yalantis.ucrop.view.TransformImageView;
+
+import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -22,6 +29,7 @@ import java.util.ArrayList;
 public class CfView extends FrameLayout {
     final private String TAG = "CfView";
     private ArrayList cardList = new ArrayList<>();
+
     private boolean flag = false;
     private boolean lock = true;
     private Context cv;
@@ -126,10 +134,24 @@ public class CfView extends FrameLayout {
         Toast.makeText(cv, "참조 실패", Toast.LENGTH_SHORT).show();
     }
 
-    public void setCardBackground(){
+    public void setCardBackground() {
         // TODO: 추가바람 ㅎ
-        ((MainActivity) cv).goToAlbum();
-    }
+        TransformImageView tfv = (TransformImageView) findViewById(R.id.tfv);
+        try {
+            String downloadsDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "../Cardline/";
+            String filename = "backRes.png";
 
+            File f = new File(downloadsDirectoryPath + filename);
+            if(f.exists()) {
+                Bitmap b = BitmapFactory.decodeFile(f.getAbsolutePath());
+
+                tfv.setImageBitmap(b);
+                tfv.setScaleType(ImageView.ScaleType.FIT_XY);
+            }
+        } catch (Exception e) {
+            Toast.makeText(cv, "이미지 설정 실패", Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
+    }
 
 }
