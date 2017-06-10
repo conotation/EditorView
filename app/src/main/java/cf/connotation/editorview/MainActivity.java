@@ -1,19 +1,15 @@
 package cf.connotation.editorview;
 
 import android.Manifest;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -28,19 +24,39 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
-import java.util.List;
 
 import cf.connotation.editorview.databinding.ActivityMainBinding;
 
-import static android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION;
-import static android.content.Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 public class MainActivity extends BaseActivity {
-    ActivityMainBinding binding;
-    CfView cf;
+    protected ActivityMainBinding binding;
+    protected CfView cf;
     private final int REQUEST_SELECT_PICTURE = 0x01;
     private String TAG = "MainActivity";
+    protected int NOW_EDITING = 1;
+
     private final int DOWNLOAD_NOTIFICATION_ID_DONE = 0x02;
+    private final int EDITING_TEXT = 0;
+    private final int EDITING_VIEW = 1;
+
+    @Override
+    public void onBackPressed() {
+        if (NOW_EDITING == EDITING_TEXT) {
+            binding.editorHigh.setVisibility(GONE);
+            binding.editorLow.setVisibility(VISIBLE);
+            NOW_EDITING = EDITING_VIEW;
+        } else {
+            showAlertDialog(getString(R.string.app_name), getString(R.string.close_text),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.super.onBackPressed();
+                        }
+                    }, getString(R.string.label_ok), null, getString(R.string.label_cancel));
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +82,29 @@ public class MainActivity extends BaseActivity {
         binding.btnStudioAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {       // + 테스트 버튼
+
+            }
+        });
+
+        binding.btnStudioPic.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getImage();
+            }
+        });
+
+        binding.btnStudioText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                binding.editorLow.setVisibility(GONE);
+                binding.editorHigh.setVisibility(VISIBLE);
+                NOW_EDITING = EDITING_TEXT;
+            }
+        });
+
+        binding.btnStudioTextAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 final TextView tv = (TextView) getLayoutInflater().inflate(R.layout.item_inner_text, null);
                 tv.setText("for Test");
                 tv.setOnTouchListener(new View.OnTouchListener() {
@@ -85,15 +124,6 @@ public class MainActivity extends BaseActivity {
                     }
                 });
                 cf.addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-//                InnerTV tv = new InnerTV(getApplicationContext());
-
-            }
-        });
-
-        binding.btnStudioPic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getImage();
             }
         });
 
@@ -195,12 +225,14 @@ public class MainActivity extends BaseActivity {
 
     private void copyFileToDownloads(Uri croppedFileUri) throws Exception {
         String downloadsDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Cardline/";
-        String filename = "backRes.png";
+        String filename = getString(R.string.background_resource);
 
         File polder = new File(downloadsDirectoryPath);
         if (!polder.exists())
             polder.mkdir();
         File saveFile = new File(downloadsDirectoryPath + filename);
+        if (saveFile.exists())
+            saveFile.delete();
         saveFile.createNewFile();
 
         FileInputStream inStream = new FileInputStream(new File(croppedFileUri.getPath()));
@@ -211,40 +243,5 @@ public class MainActivity extends BaseActivity {
         inStream.close();
         outStream.close();
 
-//        showNotification(saveFile);
     }
-
-    private void showNotification(@NonNull File file) {
-        Intent intent = new Intent(Intent.ACTION_VIEW);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        Uri fileUri = FileProvider.getUriForFile(
-                this,
-                getString(R.string.file_provider_authorities),
-                file);
-
-        intent.setDataAndType(fileUri, "image/*");
-
-        List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(
-                intent,
-                PackageManager.MATCH_DEFAULT_ONLY);
-        for (ResolveInfo info : resInfoList) {
-            grantUriPermission(
-                    info.activityInfo.packageName,
-                    fileUri, FLAG_GRANT_WRITE_URI_PERMISSION | FLAG_GRANT_READ_URI_PERMISSION);
-        }
-
-        NotificationCompat.Builder mNotification = new NotificationCompat.Builder(this);
-
-        mNotification
-                .setContentTitle(getString(R.string.app_name))
-                .setContentText(getString(R.string.notification_image_saved_click_to_preview))
-                .setTicker(getString(R.string.notification_image_saved))
-                .setSmallIcon(R.drawable.ic_done)
-                .setOngoing(false)
-                .setContentIntent(PendingIntent.getActivity(this, 0, intent, 0))
-                .setAutoCancel(true);
-        ((NotificationManager) getSystemService(NOTIFICATION_SERVICE)).notify(DOWNLOAD_NOTIFICATION_ID_DONE, mNotification.build());
-    }
-
-
 }

@@ -17,8 +17,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.yalantis.ucrop.view.TransformImageView;
-
 import java.io.File;
 import java.util.ArrayList;
 
@@ -136,17 +134,16 @@ public class CfView extends FrameLayout {
 
     public void setCardBackground() {
         // TODO: 추가바람 ㅎ
-        TransformImageView tfv = (TransformImageView) findViewById(R.id.tfv);
+        ImageView iv = (ImageView) findViewById(R.id.tfv);
         try {
-            String downloadsDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "../Cardline/";
-            String filename = "backRes.png";
+            String downloadsDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Cardline/";
+            String filename = cv.getString(R.string.background_resource);
 
             File f = new File(downloadsDirectoryPath + filename);
-            if(f.exists()) {
+            if (f.exists()) {
                 Bitmap b = BitmapFactory.decodeFile(f.getAbsolutePath());
-
-                tfv.setImageBitmap(b);
-                tfv.setScaleType(ImageView.ScaleType.FIT_XY);
+                iv.setImageBitmap(b);
+                iv.setScaleType(ImageView.ScaleType.FIT_XY);
             }
         } catch (Exception e) {
             Toast.makeText(cv, "이미지 설정 실패", Toast.LENGTH_SHORT).show();

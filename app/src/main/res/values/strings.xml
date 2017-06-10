@@ -15,8 +15,8 @@
     <string name="label_hide_bottom_ui_controls">Hide bottom UI controls</string>
     <string name="label_freestyle_crop">Freestyle crop</string>
     <string name="label_select_picture">Select Picture</string>
-    <string name="label_cancel">Cancel</string>
-    <string name="label_ok">OK</string>
+    <string name="label_cancel">취소</string>
+    <string name="label_ok">네</string>
 
     <string name="notification_image_saved">Image saved</string>
     <string name="notification_image_saved_click_to_preview">Image saved. Click to preview.</string>
@@ -41,4 +41,6 @@
     <string name="toast_unexpected_error">Unexpected error</string>
 
     <string name="file_provider_authorities">com.yalantis.ucrop.provider</string>
+    <string name="close_text">카드뉴스 작성을 취소</string>
+    <string name="background_resource">background_resource.png</string>
 </resources>

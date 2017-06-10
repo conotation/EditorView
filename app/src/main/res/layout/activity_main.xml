@@ -23,12 +23,11 @@
                 android:layout_weight="19"
                 android:background="#8866ff">
 
-                <com.yalantis.ucrop.view.TransformImageView
-                    android:layout_width="match_parent"
-                    android:background="#fff"
-                    android:scaleType="center"
+                <ImageView
                     android:id="@+id/tfv"
-                    android:layout_height="match_parent" />
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#fff" />
 
 
             </cf.connotation.editorview.CfView>
@@ -37,126 +36,245 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="11"
-                android:orientation="vertical"
-                android:weightSum="15">
+                android:weightSum="15"
+                android:orientation="vertical">
 
                 <LinearLayout
+                    android:layout_weight="8"
+                    android:weightSum="2"
+                    android:visibility="visible"
+                    android:orientation="vertical"
+                    android:id="@+id/editor_low"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="4"
-                    android:orientation="horizontal"
-                    android:weightSum="4">
+                    android:layout_height="0dp">
 
                     <LinearLayout
-                        android:id="@+id/btn_studio_move"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:background="@drawable/xml_studio_material_button"
-                        android:clickable="true"
-                        android:gravity="center">
+                        android:orientation="horizontal"
+                        android:weightSum="4">
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/btn_studio_normal_move" />
+                        <LinearLayout
+                            android:id="@+id/btn_studio_move"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/btn_studio_normal_move" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/btn_studio_text"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/btn_studio_normal_textedit" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/btn_studio_unknown"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/btn_studio_coloreditor_none" />
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/btn_studio_remove"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/btn_studio_normal_delete" />
+
+                        </LinearLayout>
+
 
                     </LinearLayout>
 
-
                     <LinearLayout
-                        android:id="@+id/btn_studio_text"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:background="@drawable/xml_studio_material_button"
-                        android:clickable="true"
-                        android:gravity="center">
+                        android:weightSum="2">
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/btn_studio_normal_textedit" />
+                        <LinearLayout
+                            android:id="@+id/btn_studio_pic"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/btn_studio_normal_addpic" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/btn_studio_add"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/btn_studio_normal_addelements" />
+                        </LinearLayout>
+
 
                     </LinearLayout>
 
-
                     <LinearLayout
-                        android:id="@+id/btn_studio_unknown"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="7"
                         android:background="@drawable/xml_studio_material_button"
-                        android:clickable="true"
                         android:gravity="center">
 
-                        <ImageView
+                        <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:src="@drawable/btn_studio_normal_move" />
+                            android:text="For Fragment"
+                            android:textSize="22sp" />
+
                     </LinearLayout>
 
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/editor_high"
+                    android:visibility="gone"
+                    android:layout_weight="8"
+                    android:weightSum="2"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:weightSum="4">
+
+                        <LinearLayout
+                            android:id="@+id/btn_studio_text_type"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="3"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:background="#10f123"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/btn_studio_text_color"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/btn_studio_coloreditor_none" />
+
+                        </LinearLayout>
+
+                    </LinearLayout>
 
                     <LinearLayout
-                        android:id="@+id/btn_studio_remove"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:background="@drawable/xml_studio_material_button"
-                        android:clickable="true"
-                        android:gravity="center">
+                        android:weightSum="4">
 
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/btn_studio_normal_delete" />
+                        <LinearLayout
+                            android:id="@+id/btn_studio_text_slidesize"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="3"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/btn_studio_text_add"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/btn_studio_normal_addelements" />
+                        </LinearLayout>
+
 
                     </LinearLayout>
 
 
                 </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="0dp"
-                    android:layout_weight="4"
-                    android:weightSum="2">
-
-                    <LinearLayout
-                        android:id="@+id/btn_studio_pic"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/xml_studio_material_button"
-                        android:clickable="true"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/btn_studio_normal_addpic" />
-
-                    </LinearLayout>
-
-
-                    <LinearLayout
-                        android:id="@+id/btn_studio_add"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:background="@drawable/xml_studio_material_button"
-                        android:clickable="true"
-                        android:gravity="center">
-
-                        <ImageView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:src="@drawable/btn_studio_normal_addelements" />
-                    </LinearLayout>
-
-
-                </LinearLayout>
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
@@ -171,6 +289,7 @@
                         android:textSize="22sp" />
 
                 </LinearLayout>
+
 
             </LinearLayout>
         </LinearLayout>
