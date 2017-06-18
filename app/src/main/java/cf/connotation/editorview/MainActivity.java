@@ -17,13 +17,14 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.facebook.stetho.Stetho;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
+import java.util.List;
 
 import cf.connotation.editorview.databinding.ActivityMainBinding;
 
@@ -37,33 +38,16 @@ public class MainActivity extends BaseActivity {
     private String TAG = "MainActivity";
     protected int NOW_EDITING = 1;
 
-    private final int DOWNLOAD_NOTIFICATION_ID_DONE = 0x02;
     private final int EDITING_TEXT = 0;
     private final int EDITING_VIEW = 1;
 
-    @Override
-    public void onBackPressed() {
-        if (NOW_EDITING == EDITING_TEXT) {
-            binding.editorHigh.setVisibility(GONE);
-            binding.editorLow.setVisibility(VISIBLE);
-            NOW_EDITING = EDITING_VIEW;
-        } else {
-            showAlertDialog(getString(R.string.app_name), getString(R.string.close_text),
-                    new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            MainActivity.super.onBackPressed();
-                        }
-                    }, getString(R.string.label_ok), null, getString(R.string.label_cancel));
-        }
-    }
+    private FontSpinAdapter fontAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        Stetho.initializeWithDefaults(this);
-        cf = binding.cfview;
+        init();
 
         binding.btnStudioMove.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -126,8 +110,33 @@ public class MainActivity extends BaseActivity {
                 cf.addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
         });
+    }
 
+    private void init() {
+        cf = binding.cfview;
 
+        List<String> data = new ArrayList<>();
+        data.add("Font 1");
+        data.add("Font 2");
+        fontAdapter = new FontSpinAdapter(this, data);
+        binding.studioSpinner.setAdapter(fontAdapter);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (NOW_EDITING == EDITING_TEXT) {
+            binding.editorHigh.setVisibility(GONE);
+            binding.editorLow.setVisibility(VISIBLE);
+            NOW_EDITING = EDITING_VIEW;
+        } else {
+            showAlertDialog(getString(R.string.app_name), getString(R.string.close_text),
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            MainActivity.super.onBackPressed();
+                        }
+                    }, getString(R.string.label_ok), null, getString(R.string.label_cancel));
+        }
     }
 
     /**

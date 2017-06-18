@@ -36,17 +36,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="11"
-                android:weightSum="15"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:weightSum="15">
 
                 <LinearLayout
-                    android:layout_weight="8"
-                    android:weightSum="2"
-                    android:visibility="visible"
-                    android:orientation="vertical"
                     android:id="@+id/editor_low"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp">
+                    android:layout_height="0dp"
+                    android:layout_weight="8"
+                    android:orientation="vertical"
+                    android:visibility="visible"
+                    android:weightSum="2">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -128,7 +128,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:weightSum="2">
+                        android:weightSum="3">
 
                         <LinearLayout
                             android:id="@+id/btn_studio_pic"
@@ -162,6 +162,21 @@
                                 android:src="@drawable/btn_studio_normal_addelements" />
                         </LinearLayout>
 
+                        <LinearLayout
+                            android:id="@+id/btn_studio_done"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="1"
+                            android:background="@drawable/xml_studio_material_button"
+                            android:clickable="true"
+                            android:gravity="center">
+
+                            <ImageView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:src="@drawable/btn_studio_done" />
+                        </LinearLayout>
+
 
                     </LinearLayout>
 
@@ -184,52 +199,59 @@
 
                 <LinearLayout
                     android:id="@+id/editor_high"
-                    android:visibility="gone"
-                    android:layout_weight="8"
-                    android:weightSum="2"
-                    android:orientation="vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="0dp">
+                    android:layout_height="0dp"
+                    android:layout_weight="8"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:weightSum="2">
+
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:orientation="horizontal"
-                        android:weightSum="4">
+                        android:orientation="horizontal">
 
-                        <LinearLayout
+                        <RelativeLayout
                             android:id="@+id/btn_studio_text_type"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_weight="3"
-                            android:background="@drawable/xml_studio_material_button"
-                            android:clickable="true"
-                            android:gravity="center">
-
-                            <ImageView
-                                android:background="#10f123"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                />
-
-                        </LinearLayout>
-
-
-                        <LinearLayout
-                            android:id="@+id/btn_studio_text_color"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="1"
                             android:background="@drawable/xml_studio_material_button"
-                            android:clickable="true"
-                            android:gravity="center">
+                            android:clickable="true">
 
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:src="@drawable/btn_studio_coloreditor_none" />
+                            <Spinner
+                                android:id="@+id/studio_spinner"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="22dp"
+                                android:background="@null" />
 
-                        </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:background="@null"
+                                android:gravity="right"
+                                android:orientation="horizontal"
+                                android:weightSum="4">
+
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:orientation="horizontal">
+
+                                    <ImageView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:src="@drawable/btn_studio_textedit_fontselectspinner" />
+                                </LinearLayout>
+
+                            </LinearLayout>
+
+
+                        </RelativeLayout>
 
                     </LinearLayout>
 
@@ -243,14 +265,59 @@
                             android:id="@+id/btn_studio_text_slidesize"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:layout_gravity="center_vertical"
                             android:layout_weight="3"
                             android:background="@drawable/xml_studio_material_button"
                             android:clickable="true"
-                            android:gravity="center">
+                            android:gravity="center"
+                            android:weightSum="14">
 
-                            <ImageView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" />
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="8dp"
+                                android:layout_weight="2"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="A"
+                                    android:textColor="#000"
+                                    android:textSize="22sp" />
+                            </LinearLayout>
+
+                            <com.xw.repo.BubbleSeekBar
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="8dp"
+                                android:layout_marginRight="8dp"
+                                android:layout_weight="10"
+                                app:bsb_auto_adjust_section_mark="false"
+                                app:bsb_max="36"
+                                app:bsb_min="16"
+                                app:bsb_progress="20"
+                                app:bsb_second_track_color="#000000"
+                                app:bsb_section_text_color="#000000"
+                                app:bsb_thumb_text_size="18sp"
+                                app:bsb_touch_to_seek="true"
+                                app:bsb_track_color="#444444"
+                                app:bsb_track_size="1dp" />
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginRight="8dp"
+                                android:layout_weight="2"
+                                android:gravity="center">
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="A"
+                                    android:textColor="#000"
+                                    android:textSize="32sp" />
+                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -275,6 +342,7 @@
 
 
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="0dp"

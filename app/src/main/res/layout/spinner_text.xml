@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layoutDirection="ltr"
+    android:id="@+id/tv"
+    android:layout_marginLeft="12dp"
+    style="@style/spinnerItemStyle"
+    android:textSize="32dp"
+    android:maxLines="1"
+    android:text="201f20"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:ellipsize="marquee"
+    android:paddingLeft="2dp"
+    />

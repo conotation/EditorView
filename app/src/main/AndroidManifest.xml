@@ -29,16 +29,6 @@
             android:theme="@style/NoActionBarTheme">
 
         </activity>
-        <activity
-            android:name=".ResultActivity"
-            android:theme="@style/NoActionBarTheme">
-
-        </activity>
-        <activity
-            android:name=".SampleActivity"
-            android:theme="@style/NoActionBarTheme">
-
-        </activity>
     </application>
 
 </manifest>
