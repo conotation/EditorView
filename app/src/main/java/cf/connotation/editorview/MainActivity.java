@@ -124,32 +124,22 @@ public class MainActivity extends BaseActivity {
                 cf.addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
         });
+        binding.fragCover.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        binding.fragCover.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void init() {
         cf = binding.cfview;
-        cf.setDrawingCacheEnabled(true);
-        cf.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-        cf.layout(0, 0, cf.getMeasuredWidth(), cf.getMeasuredHeight());
-//        cf.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @SuppressWarnings("deprecation")
-//            @Override
-//            public void onGlobalLayout() {
-//                cf.getViewTreeObserver().removeGlobalOnLayoutListener(this);
-//                System.out.println(cf == null ? "is null" : "not null");
-//                Bitmap b = Bitmap.createBitmap(cf.getWidth(), cf.getHeight(), Bitmap.Config.ARGB_8888);
-//                Canvas c = new Canvas(b);
-//                cf.layout(cf.getLeft(), cf.getTop(), cf.getRight(), cf.getBottom());
-//                cf.draw(c);
-//                bmImage.setImageBitmap(b);
-//            }
-//        });
         cf.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 try {
-                    binding.pp.setImageBitmap(getLtoB());
                     // TODO: 비트맵 하단부 슬라이드에 넣기
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -321,7 +311,7 @@ public class MainActivity extends BaseActivity {
      * Layout to Image
      */
 
-    private Bitmap getLtoB() {
+    public Bitmap getLtoB() {
 //        Bitmap snapshot = null;       //TODO 누군가 NullPointer를 해결해주세요
 //        cf.buildDrawingCache(true);
 //        snapshot = Bitmap.createBitmap(cf.getDrawingCache());

@@ -54,6 +54,11 @@ public class CfView extends FrameLayout {
 
 
     @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, widthMeasureSpec);
+    }
+
+    @Override
     public boolean onTouchEvent(MotionEvent event) {
 //        Log.e(TAG, "onTouchEvent: " + event.getAction());
         switch (event.getAction()) {
@@ -73,6 +78,8 @@ public class CfView extends FrameLayout {
                 currentView.setY(event.getY() - currentView.getMeasuredHeight() / 2);
                 break;
         }
+//        ((MainActivity) cv).binding.pp.setImageBitmap(((MainActivity)cv).getLtoB());
+
         return true;
     }
 
