@@ -5,6 +5,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -22,6 +24,7 @@ import com.yalantis.ucrop.UCrop;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,20 +55,20 @@ public class MainActivity extends BaseActivity {
         binding.btnStudioMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cf.setLocked();
+                cf.setLocked(); // 이동 Lock
             }
         });
 
         binding.btnStudioRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cf.removeCard();
+                cf.removeCard();    // 개체 삭제
             }
         });
 
         binding.btnStudioAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {       // + 테스트 버튼
+            public void onClick(View v) {       //TODO 이미지 추가
 
             }
         });
@@ -73,7 +76,18 @@ public class MainActivity extends BaseActivity {
         binding.btnStudioPic.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getImage();
+                getImage(); // 백그라운드 추가
+            }
+        });
+
+        binding.btnStudioDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    toResFile(getLtoB());   // 일단은 그리기 종료
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -114,13 +128,43 @@ public class MainActivity extends BaseActivity {
 
     private void init() {
         cf = binding.cfview;
+        cf.setDrawingCacheEnabled(true);
+        cf.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        cf.layout(0, 0, cf.getMeasuredWidth(), cf.getMeasuredHeight());
+//        cf.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @SuppressWarnings("deprecation")
+//            @Override
+//            public void onGlobalLayout() {
+//                cf.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+//                System.out.println(cf == null ? "is null" : "not null");
+//                Bitmap b = Bitmap.createBitmap(cf.getWidth(), cf.getHeight(), Bitmap.Config.ARGB_8888);
+//                Canvas c = new Canvas(b);
+//                cf.layout(cf.getLeft(), cf.getTop(), cf.getRight(), cf.getBottom());
+//                cf.draw(c);
+//                bmImage.setImageBitmap(b);
+//            }
+//        });
+        cf.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+            @Override
+            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                try {
+                    binding.pp.setImageBitmap(getLtoB());
+                    // TODO: 비트맵 하단부 슬라이드에 넣기
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         List<String> data = new ArrayList<>();
         data.add("Font 1");
         data.add("Font 2");
+
         fontAdapter = new FontSpinAdapter(this, data);
         binding.studioSpinner.setAdapter(fontAdapter);
     }
+
 
     @Override
     public void onBackPressed() {
@@ -221,7 +265,7 @@ public class MainActivity extends BaseActivity {
         } else {
             if (uri != null && uri.getScheme().equals("file")) {
                 try {
-                    copyFileToDownloads(uri);
+                    toResFile(uri);
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     Log.e(TAG, uri.toString(), e);
@@ -232,7 +276,7 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-    private void copyFileToDownloads(Uri croppedFileUri) throws Exception {
+    private void toResFile(Uri croppedFileUri) throws Exception {
         String downloadsDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Cardline/";
         String filename = getString(R.string.background_resource);
 
@@ -251,6 +295,43 @@ public class MainActivity extends BaseActivity {
         inChannel.transferTo(0, inChannel.size(), outChannel);
         inStream.close();
         outStream.close();
-
     }
+
+    private void toResFile(Bitmap b) throws Exception {
+        String dp = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Cardline/";
+        String fn = "final_resource.png";
+
+        File polder = new File(dp);
+        if (!polder.exists())
+            polder.mkdir();
+        File saveFile = new File(dp + fn);
+        if (saveFile.exists())
+            saveFile.delete();
+        saveFile.createNewFile();
+
+        OutputStream out = new FileOutputStream(saveFile);
+
+        b.compress(Bitmap.CompressFormat.PNG, 100, out);
+        out.close();
+
+        Toast.makeText(this, ".", Toast.LENGTH_SHORT).show();
+    }
+
+    /**
+     * Layout to Image
+     */
+
+    private Bitmap getLtoB() {
+//        Bitmap snapshot = null;       //TODO 누군가 NullPointer를 해결해주세요
+//        cf.buildDrawingCache(true);
+//        snapshot = Bitmap.createBitmap(cf.getDrawingCache());
+//        cf.setDrawingCacheEnabled(false);
+
+        Bitmap snapshot = Bitmap.createBitmap(cf.getWidth(), cf.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(snapshot);
+        cf.draw(canvas);
+        return snapshot;
+    }
+
+
 }

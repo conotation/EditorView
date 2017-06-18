@@ -133,7 +133,6 @@ public class CfView extends FrameLayout {
     }
 
     public void setCardBackground() {
-        // TODO: 추가바람 ㅎ
         ImageView iv = (ImageView) findViewById(R.id.tfv);
         try {
             String downloadsDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Cardline/";
