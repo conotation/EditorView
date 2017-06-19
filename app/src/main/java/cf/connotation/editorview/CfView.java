@@ -2,9 +2,7 @@ package cf.connotation.editorview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.os.Environment;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -17,7 +15,6 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import java.io.File;
 import java.util.ArrayList;
 
 /**
@@ -27,6 +24,10 @@ import java.util.ArrayList;
 public class CfView extends FrameLayout {
     final private String TAG = "CfView";
     private ArrayList cardList = new ArrayList<>();
+    private ArrayList drawList = new ArrayList<>();
+
+    private Bitmap back_resource = null;
+    public Bitmap currentShow = null;
 
     private boolean flag = false;
     private boolean lock = true;
@@ -78,7 +79,7 @@ public class CfView extends FrameLayout {
                 currentView.setY(event.getY() - currentView.getMeasuredHeight() / 2);
                 break;
         }
-//        ((MainActivity) cv).binding.pp.setImageBitmap(((MainActivity)cv).getLtoB());
+        currentShow = ((MainActivity)cv).getLtoB();
 
         return true;
     }
@@ -91,6 +92,11 @@ public class CfView extends FrameLayout {
     public void addCard(View child, ViewGroup.LayoutParams layoutParams) {
         addView(child, layoutParams);
         cardList.add(child);
+    }
+
+    public void addDrawCard(View child, ViewGroup.LayoutParams layoutParams) {
+        addView(child, layoutParams);
+        drawList.add(child);
     }
 
     public void setFlag(boolean b) {
@@ -136,25 +142,22 @@ public class CfView extends FrameLayout {
                 return;
             }
         }
+
+        for(int i = 0; i< drawList.size(); i++) {
+            if(currentView.getId() == ((View) drawList.get(i)).getId()) {
+                removeView(currentView);
+                setFlag(false);
+                drawList.remove(i);
+                return;
+            }
+        }
         Toast.makeText(cv, "참조 실패", Toast.LENGTH_SHORT).show();
     }
 
-    public void setCardBackground() {
+    public void setCardBackground(Bitmap b) {
         ImageView iv = (ImageView) findViewById(R.id.tfv);
-        try {
-            String downloadsDirectoryPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS).getAbsolutePath() + "/Cardline/";
-            String filename = cv.getString(R.string.background_resource);
-
-            File f = new File(downloadsDirectoryPath + filename);
-            if (f.exists()) {
-                Bitmap b = BitmapFactory.decodeFile(f.getAbsolutePath());
-                iv.setImageBitmap(b);
-                iv.setScaleType(ImageView.ScaleType.FIT_XY);
-            }
-        } catch (Exception e) {
-            Toast.makeText(cv, "이미지 설정 실패", Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+        back_resource = b;
+        iv.setImageBitmap(b);
     }
 
 }

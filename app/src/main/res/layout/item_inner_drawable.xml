@@ -2,17 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-        <variable
-            name="tv"
-            type="cf.connotation.editorview.InText" />
-    </data>
-
-    <TextView
+    <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@{ tv.value }"
-        android:textSize="22sp"
-        tools:text="for Test" />
+        />
 
 </layout>

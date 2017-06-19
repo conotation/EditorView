@@ -9,20 +9,20 @@ import android.util.AttributeSet;
  * Created by Connotation on 2017-06-05.
  */
 
-public class InnerTV extends AppCompatTextView {
+public class InText extends AppCompatTextView {
     public String value = "for Test";
 
-    public InnerTV(Context context) {
+    public InText(Context context) {
         super(context);
 //        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
 //                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
-    public InnerTV(Context context, @Nullable AttributeSet attrs) {
+    public InText(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public InnerTV(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public InText(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 
