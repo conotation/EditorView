@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,7 +36,12 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends BaseActivity {
     protected ActivityMainBinding binding;
     protected CfView cf;
+    protected RecyclerView rv;
+    protected RecyclerView.Adapter rvAdapter;
+    protected ArrayList<fragData> fragDataArrayList;
+
     private final String TAG = "MainActivity";
+
     private final int REQUEST_SELECT_PICTURE = 0x01;
     protected int NOW_EDITING = 1;
 
@@ -154,8 +161,19 @@ public class MainActivity extends BaseActivity {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, data);
         binding.studioSpinner.setAdapter(arrayAdapter);
         binding.studioSpinner.setSelection(0);
-    }
 
+        rv = binding.cyclerView;
+        rv.setHasFixedSize(true);
+        rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        fragDataArrayList = new ArrayList<>();
+        fragDataArrayList.add(new fragData(true));
+        fragDataArrayList.add(new fragData(true));
+        fragDataArrayList.add(new fragData(true));
+        rvAdapter = new PageAdapter(fragDataArrayList);
+        rv.setAdapter(rvAdapter);
+
+    }
 
     @Override
     public void onBackPressed() {
@@ -223,7 +241,7 @@ public class MainActivity extends BaseActivity {
      * Using UCrop Library
      */
 
-    private void CropResult(Intent i) throws Exception{
+    private void CropResult(Intent i) throws Exception {
         if (i != null) {
             final Uri uri = UCrop.getOutput(i);
             if (drawFlag) {
@@ -251,8 +269,8 @@ public class MainActivity extends BaseActivity {
                 cf.addDrawCard(iv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
                 return;
             }
-                Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-                cf.setCardBackground(b);
+            Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            cf.setCardBackground(b);
         } else {
             Toast.makeText(this, "이미지 에러 [001]", Toast.LENGTH_SHORT).show();
         }

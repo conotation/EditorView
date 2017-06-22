@@ -1,35 +1,54 @@
-<?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:gravity="center"
+    android:layout_height="match_parent"
+    android:minWidth="64dp"
     android:orientation="vertical"
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp">
+    android:layout_marginLeft="12dp">
 
-    <ImageView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:layout_height="wrap_content"
+        android:minHeight="4dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="8dp"
-        android:background="#000" />
+        android:gravity="center"
+        tools:layout_width="32dp">
+
+        <ImageView
+            android:id="@+id/cover_1"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#f01df9" />
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/iv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/bg_rounded_fragview"
-        />
+        android:layout_height="0dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_weight="7"
+        android:background="#0f82ff" />
 
-    <ImageView
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="8dp"
-        android:background="#000" />
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center">
 
-</LinearLayout>
+        <ImageView
+            android:id="@+id/cover_2"
+            android:layout_width="match_parent"
+            android:minHeight="4dp"
+
+            android:layout_height="2dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="#f01df9" />
+    </LinearLayout>
+
+</RelativeLayout>
