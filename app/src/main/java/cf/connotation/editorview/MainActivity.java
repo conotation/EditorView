@@ -1,30 +1,39 @@
 package cf.connotation.editorview;
 
 import android.Manifest;
+import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.util.Pair;
+import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,9 +47,9 @@ public class MainActivity extends BaseActivity {
     protected CfView cf;
     protected RecyclerView rv;
     protected RecyclerView.Adapter rvAdapter;
-    protected ArrayList<fragData> fragDataArrayList;
+//    protected ArrayList<fragData> fragDataArrayList;
 
-    private final String TAG = "MainActivity";
+    private final String TAG = "MainActivityCf";
 
     private final int REQUEST_SELECT_PICTURE = 0x01;
     protected int NOW_EDITING = 1;
@@ -85,8 +94,8 @@ public class MainActivity extends BaseActivity {
 
         binding.btnStudioAdd.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {       //TODO 이미지 추가
-                drawFlag = true;
+            public void onClick(View v) {
+                drawFlag = true;    //
                 getImage();
             }
         });
@@ -129,10 +138,10 @@ public class MainActivity extends BaseActivity {
                         if (cf.getLocked())
                             return false;
                         switch (event.getAction()) {
-                            case 0:
+                            case MotionEvent.ACTION_DOWN:
                                 cf.setFlag(true, tv);
                                 break;
-                            case 1:
+                            case MotionEvent.ACTION_UP:
                                 cf.setFlag(false);
                                 break;
                         }
@@ -166,11 +175,11 @@ public class MainActivity extends BaseActivity {
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        fragDataArrayList = new ArrayList<>();
-        fragDataArrayList.add(new fragData(true));
-        fragDataArrayList.add(new fragData(true));
-        fragDataArrayList.add(new fragData(true));
-        rvAdapter = new PageAdapter(fragDataArrayList);
+//        fragDataArrayList = new ArrayList<>();
+//        fragDataArrayList.add(new fragData(true));
+//        fragDataArrayList.add(new fragData(true));
+//        fragDataArrayList.add(new fragData(true));
+//        rvAdapter = new PageAdapter(fragDataArrayList);
         rv.setAdapter(rvAdapter);
 
     }
@@ -246,9 +255,71 @@ public class MainActivity extends BaseActivity {
             final Uri uri = UCrop.getOutput(i);
             if (drawFlag) {
                 drawFlag = false;
-                Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inJustDecodeBounds = true;
+//                BitmapFactory.decodeStream(getResources(), , options); // inJustDecodeBounds 설정을 해주지 않으면 이부분에서 큰 이미지가 들어올 경우 outofmemory Exception이 발생한다.
+//                int imageHeight = options.outHeight;
+//                int imageWidth = options.outWidth;
+//                String imageType = options.outMimeType;
+                final BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 2;
+
+                Bitmap b = getBitmap(getContentResolver(), uri, options);
+//                Bitmap b = getBitmap(getContentResolver(), uri);
+
                 // TODO 이미지 카드 만들기
+                final LinearLayout layout = new LinearLayout(this);
+//                final ImageView iv = new ImageView(this);
+                final int _width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360 * b.getWidth() / (b.getWidth() + b.getHeight()), getResources().getDisplayMetrics());
+                final int _height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360 * b.getHeight() / (b.getWidth() + b.getHeight()), getResources().getDisplayMetrics());
+                layout.setLayoutParams(new LinearLayoutCompat.LayoutParams(_width, _height));
+                BitmapDrawable bm = new BitmapDrawable(this.getResources(), b);
+                layout.setBackground(bm);
+                layout.setOnTouchListener(new View.OnTouchListener() {
+                    @Override
+                    public boolean onTouch(View v, MotionEvent event) {
+                        if (cf.getLocked())
+                            return false;
+                        switch (event.getAction()) {
+                            case MotionEvent.ACTION_UP:
+                                Log.e(TAG, "onTouch: UP" );
+                                cf.setFlag(true, layout);
+                                break;
+                            case MotionEvent.ACTION_POINTER_DOWN:
+                                Log.e(TAG, "onTouch: DOUBLE DOWN" );
+                                Pair<Float, Float> pos1;
+                                Pair<Float, Float> pos2;
+                                if (cf.pos1 != Pair.create(0f, 0f)) {
+                                    cf.pos1 = Pair.create(event.getX(0), event.getY(1));
+                                    cf.pos2 = Pair.create(event.getX(1), event.getY(1));
+                                } else {    //
+                                    pos1 = Pair.create(event.getX(0), event.getY(1));
+                                    pos2 = Pair.create(event.getX(1), event.getY(1));
+                                    DistantFar(pos1, pos2);
+                                }
+
+                                break;
+                            case MotionEvent.ACTION_DOWN:
+                                Log.e(TAG, "onTouch: DOWN" );
+                            case MotionEvent.ACTION_MOVE:
+                                Log.e(TAG, "onTouch: MOVE" );
+                                cf.setFlag(false);
+                                break;
+                        }
+                        return true;
+                    }
+                });
+                Log.e(TAG, "CropResult: " + b.getWidth() + " / " + b.getHeight());
+//                iv.setScaleType(ImageView.ScaleType.CENTER);
+                cf.addDrawCard(layout, null, b);
+
+/*                // TODO 이미지 카드 만들기
                 final ImageView iv = (ImageView) getLayoutInflater().inflate(R.layout.item_inner_drawable, null);
+                LinearLayout layout = new LinearLayout(this);
+//                final ImageView iv = new ImageView(this);
+                final int _width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360 * b.getWidth() / (b.getWidth() + b.getHeight()), getResources().getDisplayMetrics());
+                final int _height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360 * (1 - b.getWidth() / (b.getWidth() + b.getHeight())), getResources().getDisplayMetrics());
+                iv.setLayoutParams(new LinearLayoutCompat.LayoutParams(_width, _height));
                 iv.setImageBitmap(b);
                 iv.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -256,38 +327,71 @@ public class MainActivity extends BaseActivity {
                         if (cf.getLocked())
                             return false;
                         switch (event.getAction()) {
-                            case 0:
+                            case MotionEvent.ACTION_UP:
                                 cf.setFlag(true, iv);
                                 break;
-                            case 1:
+                            case MotionEvent.ACTION_POINTER_DOWN:
+                                Pair<Float, Float> pos1;
+                                Pair<Float, Float> pos2;
+                                if (cf.pos1 != Pair.create(0f, 0f)) {
+                                    cf.pos1 = Pair.create(event.getX(0), event.getY(1));
+                                    cf.pos2 = Pair.create(event.getX(1), event.getY(1));
+                                } else {    //
+                                    pos1 = Pair.create(event.getX(0), event.getY(1));
+                                    pos2 = Pair.create(event.getX(1), event.getY(1));
+                                    DistantFar(pos1, pos2);
+                                }
+
+                                break;
+                            case MotionEvent.ACTION_DOWN:
                                 cf.setFlag(false);
                                 break;
                         }
                         return true;
                     }
                 });
-                cf.addDrawCard(iv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-                return;
+                Log.e(TAG, "CropResult: " + b.getWidth() + " / " + b.getHeight());
+//                iv.setScaleType(ImageView.ScaleType.CENTER);
+                cf.addDrawCard(iv, null, b);*/
+            } else {
+                Bitmap b = getBitmap(getContentResolver(), uri);
+                cf.setCardBackground(b);
             }
-            Bitmap b = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
-            cf.setCardBackground(b);
         } else {
             Toast.makeText(this, "이미지 에러 [001]", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private void startCropActivity(@NonNull Uri uri) {
-        String destinationFileName = "0x10x20x30x4.png";    // 의미없음
 
-        UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)));
-        uCrop = uCrop.withAspectRatio(1, 1);
+    private boolean DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
+        float _x = cf.pos1.first - cf.pos2.first;
+        float _y = cf.pos1.second - cf.pos2.second;
+        double _1 = Math.sqrt(_x + _y);
+        float x = p1.first - p2.first;
+        float y = p2.second - p2.second;
+        double _2 = Math.sqrt(x * x + y * y);
 
-        uCrop.start(MainActivity.this);
+        return _1 < _2;
     }
 
-    /**
-     * 이미지 다운로드
-     */
+
+    private void startCropActivity(@NonNull Uri uri) {
+        String destinationFileName = "0x10x20x30x4.png";    // 의미없음
+        if (drawFlag) {
+            UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)));
+            uCrop = uCrop.useSourceImageAspectRatio();
+            UCrop.Options options = new UCrop.Options();
+            options.setCompressionFormat(Bitmap.CompressFormat.PNG);
+            uCrop = uCrop.withOptions(options);
+
+            uCrop.start(MainActivity.this);
+        } else {
+            UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)));
+            uCrop = uCrop.withAspectRatio(1, 1);
+
+            uCrop.start(MainActivity.this);
+        }
+    }
 
     /**
      * Layout to Image
@@ -303,6 +407,25 @@ public class MainActivity extends BaseActivity {
         Canvas canvas = new Canvas(snapshot);
         cf.draw(canvas);
         return snapshot;
+    }
+
+    public Bitmap getBitmap(ContentResolver cr, Uri url)
+            throws FileNotFoundException, IOException {
+        InputStream input = cr.openInputStream(url);
+        Bitmap bitmap = BitmapFactory.decodeStream(input);
+        input.close();
+        return bitmap;
+    }
+
+
+    public Bitmap getBitmap(ContentResolver cr,
+                            Uri url,
+                            BitmapFactory.Options options)
+            throws FileNotFoundException, IOException {
+        InputStream input = cr.openInputStream(url);
+        Bitmap bitmap = BitmapFactory.decodeStream(input, null, options);
+        input.close();
+        return bitmap;
     }
 
 

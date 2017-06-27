@@ -8,11 +8,15 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
+import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -23,8 +27,21 @@ import java.util.ArrayList;
 
 public class CfView extends FrameLayout {
     final private String TAG = "CfView";
-    private ArrayList cardList = new ArrayList<>();
-    private ArrayList drawList = new ArrayList<>();
+    private PageManager pag = new PageManager(this);
+    private ArrayList<View> cardList = new ArrayList<>();     // Text
+    private ArrayList<View> drawList = new ArrayList<>();     // Image
+    private ArrayList<Bitmap> drawSubList = new ArrayList<>();     // Image Bitmap
+    private int page = 1;
+    public int count_page = 1;
+    private final int NONE = 0;
+    private final int DRAG = 1;
+    private final int ZOOM = 2;
+
+    public Pair<Float, Float> pos1 = Pair.create(0f, 0f);
+    public Pair<Float, Float> pos2 = Pair.create(0f, 0f);
+
+    private int MODE = NONE;
+
 
     private Bitmap back_resource = null;
     public Bitmap currentShow = null;
@@ -53,7 +70,6 @@ public class CfView extends FrameLayout {
 
     }
 
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, widthMeasureSpec);
@@ -62,24 +78,45 @@ public class CfView extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 //        Log.e(TAG, "onTouchEvent: " + event.getAction());
-        switch (event.getAction()) {
-            case 0:
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_UP:       // (1)
                 setFlag(false);
+                Log.e(TAG, "onTouchEvent: UP");
                 break;
 
 //            case 1:       // 추후 좌표값으로 수정해야될듯
-//                setFlag(false);
-//                break;
 
-            case 2:
+            case MotionEvent.ACTION_POINTER_DOWN:   // ( 5 )  > 1
+                MODE = ZOOM;
+                Log.e(TAG, "onTouchEvent: ZOOM");
+
+                break;
+
+            case MotionEvent.ACTION_DOWN:
+                Log.e(TAG, "onTouchEvent: DOWN");
+            case MotionEvent.ACTION_MOVE:
+                Log.e(TAG, "onTouchEvent: MOVE" + "  /  v:" + (currentView == null));
                 if (currentView == null)
-                    return false;
+                    return true;
                 currentView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-                currentView.setX(event.getX() - currentView.getMeasuredWidth() / 2);
-                currentView.setY(event.getY() - currentView.getMeasuredHeight() / 2);
+                if (currentView instanceof LinearLayout) {
+                    if (event.getX() < currentView.getX() || event.getX() > currentView.getX() + currentView.getMeasuredWidth() || event.getY() < currentView.getY() || event.getY() > currentView.getY() + currentView.getHeight()) {
+                        setFlag(false);
+                        return true;
+                    }
+                    currentView.setX(event.getX() - currentView.getWidth() / 2);
+                    currentView.setY(event.getY() - currentView.getHeight() / 2);
+                } else {
+                    if (event.getX() < currentView.getX() || event.getX() > currentView.getX() + currentView.getMeasuredWidth() || event.getY() < currentView.getY() || event.getY() > currentView.getY() + currentView.getMeasuredHeight()) {
+                        setFlag(false);
+                        return true;
+                    }
+                    currentView.setX(event.getX() - currentView.getMeasuredWidth() / 2);
+                    currentView.setY(event.getY() - currentView.getMeasuredHeight() / 2);
+                }
                 break;
         }
-        currentShow = ((MainActivity)cv).getLtoB();
+        currentShow = ((MainActivity) cv).getLtoB();
 
         return true;
     }
@@ -94,23 +131,31 @@ public class CfView extends FrameLayout {
         cardList.add(child);
     }
 
-    public void addDrawCard(View child, ViewGroup.LayoutParams layoutParams) {
-        addView(child, layoutParams);
+    public void addDrawCard(final View child, LinearLayout.LayoutParams layoutParams, final Bitmap b) {
+        if (layoutParams != null) {
+            addView(child, layoutParams);
+        } else {
+            addView(child);
+        }
         drawList.add(child);
+        drawSubList.add(b);
     }
 
     public void setFlag(boolean b) {
         flag = b;
         if (currentView != null)
-            currentView.setBackgroundColor(Color.argb(0, 0, 0, 0));
+            if (currentView instanceof TextView)
+                currentView.setBackgroundColor(Color.argb(0, 0, 0, 0));
         currentView = null;
+        MODE = NONE;
     }
 
     public void setFlag(boolean b, View tv) {
         flag = b;
         if (b) {
             currentView = tv;
-            currentView.setBackground(ContextCompat.getDrawable(cv, R.drawable.xml_tv_border));
+            if (currentView instanceof TextView)
+                currentView.setBackground(ContextCompat.getDrawable(cv, R.drawable.xml_tv_border));
         } else {
             currentView = null;
         }
@@ -143,21 +188,58 @@ public class CfView extends FrameLayout {
             }
         }
 
-        for(int i = 0; i< drawList.size(); i++) {
-            if(currentView.getId() == ((View) drawList.get(i)).getId()) {
+        for (int i = 0; i < drawList.size(); i++) {
+            if (currentView.getId() == ((View) drawList.get(i)).getId()) {
                 removeView(currentView);
                 setFlag(false);
                 drawList.remove(i);
+                drawSubList.remove(i);
                 return;
             }
         }
-        Toast.makeText(cv, "참조 실패", Toast.LENGTH_SHORT).show();
+        Toast.makeText(cv, "에러코드[404]", Toast.LENGTH_SHORT).show();
     }
 
     public void setCardBackground(Bitmap b) {
-        ImageView iv = (ImageView) findViewById(R.id.tfv);
+        ImageView iv = findViewById(R.id.tfv);
         back_resource = b;
         iv.setImageBitmap(b);
     }
+
+    public void addPage() {
+        // TODO 페이지 추가
+        Page p = new Page(cardList, drawList, drawSubList, back_resource, page);
+        addPage(p);
+    }
+
+    public void addPage(Page p) {
+        // __addPage__
+        pag.addArr(p);
+    }
+
+    public void movePage(int x) {
+        // TODO 페이지 이동 구현
+        setFlag(false);
+        addPage(new Page(cardList, drawList, drawSubList, back_resource, page));
+        Page p = pag.returnPage(x);
+        cardList = p.getCard();
+        drawList = p.getDraw();
+        drawSubList = p.getBitmap();
+        back_resource = p.getBack();
+        page = p.getPage();
+    }
+
+    public void createTempPage() {
+        Bitmap resb = back_resource;
+        String res = "";
+        for (int i = 0; i < cardList.size(); i++) {
+            View v = (View) cardList.get(i);
+
+//            v.getX() + v.getY();
+        }
+
+
+    }
+
 
 }

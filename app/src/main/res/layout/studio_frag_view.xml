@@ -27,6 +27,7 @@
         android:id="@+id/iv"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:minHeight="64dp"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_weight="7"
@@ -43,7 +44,6 @@
             android:id="@+id/cover_2"
             android:layout_width="match_parent"
             android:minHeight="4dp"
-
             android:layout_height="2dp"
             android:layout_marginBottom="8dp"
             android:layout_marginLeft="8dp"
