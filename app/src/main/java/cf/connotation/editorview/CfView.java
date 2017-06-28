@@ -310,5 +310,4 @@ public class CfView extends FrameLayout {
 
         return _1 < _2;
     }
-
 }
