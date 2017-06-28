@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
@@ -301,12 +300,6 @@ public class CfView extends FrameLayout {
         float x = p1.first - p2.first;
         float y = p1.second - p2.second;
         double _2 = Math.sqrt(x * x + y * y);       // 현재점
-
-        Log.e(TAG, "===============");
-        Log.e(TAG, "DistantFar: " + (_1 < _2));
-        Log.e(TAG, "             : " + "(" + pos1.first + ", " + pos1.second + "), (" + pos2.first + ", " + pos2.second + ")");
-        Log.e(TAG, "             : " + "(" + p1.first + ", " + p1.second + "), (" + p2.first + ", " + p2.second + ")");
-        Log.e(TAG, "===============");
 
         return _1 < _2;
     }

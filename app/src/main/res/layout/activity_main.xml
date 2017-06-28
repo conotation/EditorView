@@ -208,47 +208,47 @@
                         android:layout_width="match_parent"
                         android:layout_height="0dp"
                         android:layout_weight="1"
-                        android:weightSum="4"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:weightSum="4">
 
                         <RelativeLayout
                             android:id="@+id/btn_studio_text_type"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_weight="3"
-                            android:gravity="center"
                             android:background="@drawable/xml_studio_material_button"
-                            android:clickable="true">
+                            android:clickable="true"
+                            android:gravity="center">
 
                             <fr.ganfra.materialspinner.MaterialSpinner
                                 android:id="@+id/studio_spinner"
-                                app:ms_enableErrorLabel="false"
                                 android:layout_width="match_parent"
-                                app:ms_thickness="0dp"
+                                android:layout_height="match_parent"
                                 android:layout_marginLeft="12dp"
                                 android:layout_marginRight="12dp"
-                                android:layout_height="match_parent" />
+                                app:ms_enableErrorLabel="false"
+                                app:ms_thickness="0dp" />
 
                             <!--<LinearLayout-->
-                                <!--android:layout_width="match_parent"-->
-                                <!--android:layout_height="match_parent"-->
-                                <!--android:background="@null"-->
-                                <!--android:gravity="right"-->
-                                <!--android:orientation="horizontal"-->
-                                <!--android:weightSum="4">-->
+                            <!--android:layout_width="match_parent"-->
+                            <!--android:layout_height="match_parent"-->
+                            <!--android:background="@null"-->
+                            <!--android:gravity="right"-->
+                            <!--android:orientation="horizontal"-->
+                            <!--android:weightSum="4">-->
 
-                                <!--<LinearLayout-->
-                                    <!--android:layout_width="0dp"-->
-                                    <!--android:layout_height="match_parent"-->
-                                    <!--android:layout_weight="1"-->
-                                    <!--android:gravity="center"-->
-                                    <!--android:orientation="horizontal">-->
+                            <!--<LinearLayout-->
+                            <!--android:layout_width="0dp"-->
+                            <!--android:layout_height="match_parent"-->
+                            <!--android:layout_weight="1"-->
+                            <!--android:gravity="center"-->
+                            <!--android:orientation="horizontal">-->
 
-                                    <!--<ImageView-->
-                                        <!--android:layout_width="wrap_content"-->
-                                        <!--android:layout_height="wrap_content"-->
-                                        <!--android:src="@drawable/btn_studio_textedit_fontselectspinner" />-->
-                                <!--</LinearLayout>-->
+                            <!--<ImageView-->
+                            <!--android:layout_width="wrap_content"-->
+                            <!--android:layout_height="wrap_content"-->
+                            <!--android:src="@drawable/btn_studio_textedit_fontselectspinner" />-->
+                            <!--</LinearLayout>-->
 
                             <!--</LinearLayout>-->
 
@@ -264,7 +264,6 @@
                         android:weightSum="4">
 
                         <LinearLayout
-                            android:id="@+id/btn_studio_text_slidesize"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
                             android:layout_gravity="center_vertical"
@@ -290,6 +289,7 @@
                             </LinearLayout>
 
                             <com.xw.repo.BubbleSeekBar
+                                android:id="@+id/btn_studio_text_slidesize"
                                 android:layout_width="0dp"
                                 android:layout_height="match_parent"
                                 android:layout_marginLeft="8dp"
@@ -350,14 +350,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="7"
-                    android:orientation="vertical"
                     android:background="@drawable/xml_studio_material_button"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:orientation="vertical">
 
                     <android.support.v7.widget.RecyclerView
-                        android:layout_width="match_parent"
                         android:id="@+id/cyclerView"
-                        android:layout_height="match_parent"/>
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent" />
 
                 </LinearLayout>
 

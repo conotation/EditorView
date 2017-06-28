@@ -9,6 +9,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -28,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.github.nitrico.fontbinder.FontBinder;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -129,12 +131,21 @@ public class MainActivity extends BaseActivity {
         binding.btnStudioTextAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final TextView tv = (TextView) getLayoutInflater().inflate(R.layout.item_inner_text, null);
+                final TextView tv = new TextView(getApplicationContext());
                 tv.setText("for Test");
+                tv.setTextSize(binding.btnStudioTextSlidesize.getProgress());
+                tv.setTextColor(Color.BLACK);
+                Log.e(TAG, "onClick: " + binding.studioSpinner.getSelectedItemPosition());
+                if (binding.studioSpinner.getSelectedItemPosition() == 0) {
+                    tv.setTypeface(FontBinder.get("NanumGothic"));
+                } else {
+                    tv.setTypeface(FontBinder.get("NanumSquareB"));
+                }
                 tv.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
                         if (cf.getLocked())
+                            // Alert창을 띄워 텍스트 수정
                             return false;
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
@@ -162,10 +173,8 @@ public class MainActivity extends BaseActivity {
 
     private void init() {
         List<String> data = new ArrayList<>();
-        data.add("Font 1");
-        data.add("Font 2");
-        data.add("Font 3");
-//        FontSpinAdapter fontAdapter = new FontSpinAdapter(this, data);
+        data.add("NanumGothic");
+        data.add("NanumSquareB");
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, data);
         binding.studioSpinner.setAdapter(arrayAdapter);
         binding.studioSpinner.setSelection(0);
@@ -174,11 +183,6 @@ public class MainActivity extends BaseActivity {
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-//        fragDataArrayList = new ArrayList<>();
-//        fragDataArrayList.add(new fragData(true));
-//        fragDataArrayList.add(new fragData(true));
-//        fragDataArrayList.add(new fragData(true));
-//        rvAdapter = new PageAdapter(fragDataArrayList);
         rv.setAdapter(rvAdapter);
 
     }
