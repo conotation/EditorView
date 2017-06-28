@@ -31,7 +31,6 @@ import android.widget.Toast;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -280,30 +279,24 @@ public class MainActivity extends BaseActivity {
                     public boolean onTouch(View v, MotionEvent event) {
                         if (cf.getLocked())
                             return false;
-                        switch (event.getAction()) {
+                        switch (event.getAction() & MotionEvent.ACTION_MASK) {
                             case MotionEvent.ACTION_UP:
-                                Log.e(TAG, "onTouch: UP" );
-                                cf.setFlag(true, layout);
+//                                Log.e(TAG, "onTouch: UP");
+//                                cf.setFlag(true, layout);
+                                cf.MODE = CfView.NONE;
+                                cf.setFlag(false);
                                 break;
                             case MotionEvent.ACTION_POINTER_DOWN:
-                                Log.e(TAG, "onTouch: DOUBLE DOWN" );
-                                Pair<Float, Float> pos1;
-                                Pair<Float, Float> pos2;
-                                if (cf.pos1 != Pair.create(0f, 0f)) {
-                                    cf.pos1 = Pair.create(event.getX(0), event.getY(1));
-                                    cf.pos2 = Pair.create(event.getX(1), event.getY(1));
-                                } else {    //
-                                    pos1 = Pair.create(event.getX(0), event.getY(1));
-                                    pos2 = Pair.create(event.getX(1), event.getY(1));
-                                    DistantFar(pos1, pos2);
-                                }
-
+                                cf.setFlag(true, layout);
+                                cf.MODE = CfView.ZOOM;
+                                cf.onTouchEvent(event);
                                 break;
                             case MotionEvent.ACTION_DOWN:
-                                Log.e(TAG, "onTouch: DOWN" );
+//                                Log.e(TAG, "onTouch: DOWN");
                             case MotionEvent.ACTION_MOVE:
-                                Log.e(TAG, "onTouch: MOVE" );
-                                cf.setFlag(false);
+//                                Log.e(TAG, "onTouch: MOVE");
+                                cf.MODE = CfView.MOVE;
+                                cf.setFlag(true, layout);
                                 break;
                         }
                         return true;
@@ -363,7 +356,7 @@ public class MainActivity extends BaseActivity {
     }
 
 
-    private boolean DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
+    private int DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
         float _x = cf.pos1.first - cf.pos2.first;
         float _y = cf.pos1.second - cf.pos2.second;
         double _1 = Math.sqrt(_x + _y);
@@ -371,7 +364,7 @@ public class MainActivity extends BaseActivity {
         float y = p2.second - p2.second;
         double _2 = Math.sqrt(x * x + y * y);
 
-        return _1 < _2;
+        return _1 < _2 ? 1 : 0;
     }
 
 
@@ -410,7 +403,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public Bitmap getBitmap(ContentResolver cr, Uri url)
-            throws FileNotFoundException, IOException {
+            throws IOException {
         InputStream input = cr.openInputStream(url);
         Bitmap bitmap = BitmapFactory.decodeStream(input);
         input.close();
@@ -421,7 +414,7 @@ public class MainActivity extends BaseActivity {
     public Bitmap getBitmap(ContentResolver cr,
                             Uri url,
                             BitmapFactory.Options options)
-            throws FileNotFoundException, IOException {
+            throws IOException {
         InputStream input = cr.openInputStream(url);
         Bitmap bitmap = BitmapFactory.decodeStream(input, null, options);
         input.close();

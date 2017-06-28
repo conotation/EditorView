@@ -33,15 +33,14 @@ public class CfView extends FrameLayout {
     private ArrayList<Bitmap> drawSubList = new ArrayList<>();     // Image Bitmap
     private int page = 1;
     public int count_page = 1;
-    private final int NONE = 0;
-    private final int DRAG = 1;
-    private final int ZOOM = 2;
+    public static final int NONE = 0;
+    public static final int MOVE = 1;
+    public static final int ZOOM = 2;
 
     public Pair<Float, Float> pos1 = Pair.create(0f, 0f);
     public Pair<Float, Float> pos2 = Pair.create(0f, 0f);
 
-    private int MODE = NONE;
-
+    public int MODE = NONE;
 
     private Bitmap back_resource = null;
     public Bitmap currentShow = null;
@@ -51,6 +50,7 @@ public class CfView extends FrameLayout {
     private Context cv;
 
     private View currentView = null;
+    private View lastView = null;
 
     public CfView(@NonNull Context context) {
         super(context);
@@ -78,45 +78,98 @@ public class CfView extends FrameLayout {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 //        Log.e(TAG, "onTouchEvent: " + event.getAction());
+//        Log.e(TAG, "onTouchEvent: " + event.getPointerCount());
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:       // (1)
+                MODE = NONE;
+                pos1 = Pair.create(0f, 0f);
+                pos2 = Pair.create(0f, 0f);
                 setFlag(false);
-                Log.e(TAG, "onTouchEvent: UP");
+//                Log.e(TAG, "onTouchEvent: UP");
                 break;
 
 //            case 1:       // 추후 좌표값으로 수정해야될듯
 
             case MotionEvent.ACTION_POINTER_DOWN:   // ( 5 )  > 1
                 MODE = ZOOM;
-                Log.e(TAG, "onTouchEvent: ZOOM");
+//                Log.e(TAG, "onTouchEvent: ZOOM");
 
                 break;
 
             case MotionEvent.ACTION_DOWN:
-                Log.e(TAG, "onTouchEvent: DOWN");
+//                Log.e(TAG, "onTouchEvent: DOWN");
             case MotionEvent.ACTION_MOVE:
-                Log.e(TAG, "onTouchEvent: MOVE" + "  /  v:" + (currentView == null));
+//                Log.e(TAG, "onTouchEvent: MOVE" + "  /  v:" + (currentView != null));
+//                Log.e(TAG, "onTouchEvent: m:" + MODE);
                 if (currentView == null)
                     return true;
-                currentView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-                if (currentView instanceof LinearLayout) {
-                    if (event.getX() < currentView.getX() || event.getX() > currentView.getX() + currentView.getMeasuredWidth() || event.getY() < currentView.getY() || event.getY() > currentView.getY() + currentView.getHeight()) {
-                        setFlag(false);
-                        return true;
+                if (event.getPointerCount() == 2) {
+                    if (pos1 == Pair.create(0f, 0f)) {
+                        pos1 = Pair.create(event.getX(0), event.getY(0));
+                        pos2 = Pair.create(event.getX(1), event.getY(1));
+                    } else {
+                        Pair<Float, Float> cpos1;
+                        Pair<Float, Float> cpos2;
+                        cpos1 = Pair.create(event.getX(0), event.getY(0));
+                        cpos2 = Pair.create(event.getX(1), event.getY(1));
+                        if (lastView == null)
+                            return true;
+                        ViewGroup.LayoutParams params;
+                        if (currentView == null) {
+                            params = lastView.getLayoutParams();
+                        } else {
+                            params = currentView.getLayoutParams();
+                        }
+                        if (DistantFar(cpos1, cpos2)) {
+                            params.width = (int) Math.ceil(params.width * 1.01);
+                            params.height = (int) Math.ceil(params.height * 1.01);
+                            if (currentView == null)
+                                lastView.setLayoutParams(params);
+                            else {
+                                currentView.setLayoutParams(params);
+                            }
+                        } else {
+                            params.width = (int) Math.floor(params.width * 0.99);
+                            params.height = (int) Math.floor(params.height * 0.99);
+                            if (currentView == null)
+                                lastView.setLayoutParams(params);
+                            else {
+                                currentView.setLayoutParams(params);
+                            }
+                        }
+                        if (currentView == null) {
+                            lastView.invalidate();
+                        } else {
+                            currentView.invalidate();
+                        }
                     }
-                    currentView.setX(event.getX() - currentView.getWidth() / 2);
-                    currentView.setY(event.getY() - currentView.getHeight() / 2);
+                    pos1 = Pair.create(event.getX(0), event.getY(0));
+                    pos2 = Pair.create(event.getX(1), event.getY(1));
                 } else {
-                    if (event.getX() < currentView.getX() || event.getX() > currentView.getX() + currentView.getMeasuredWidth() || event.getY() < currentView.getY() || event.getY() > currentView.getY() + currentView.getMeasuredHeight()) {
-                        setFlag(false);
-                        return true;
+                    MODE = MOVE;
+                    currentView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+                    if (currentView instanceof LinearLayout) {
+                        if (event.getX() < currentView.getX() || event.getX() > currentView.getX() + currentView.getMeasuredWidth() || event.getY() < currentView.getY() || event.getY() > currentView.getY() + currentView.getHeight()) {
+                            setFlag(false);
+                            return true;
+                        }
+                        currentView.setX(event.getX() - currentView.getWidth() / 2);
+                        currentView.setY(event.getY() - currentView.getHeight() / 2);
+                    } else {
+                        if (event.getX() < currentView.getX() || event.getX() > currentView.getX() + currentView.getMeasuredWidth() || event.getY() < currentView.getY() || event.getY() > currentView.getY() + currentView.getMeasuredHeight()) {
+                            setFlag(false);
+                            return true;
+                        }
+                        currentView.setX(event.getX() - currentView.getMeasuredWidth() / 2);
+                        currentView.setY(event.getY() - currentView.getMeasuredHeight() / 2);
                     }
-                    currentView.setX(event.getX() - currentView.getMeasuredWidth() / 2);
-                    currentView.setY(event.getY() - currentView.getMeasuredHeight() / 2);
                 }
                 break;
         }
-        currentShow = ((MainActivity) cv).getLtoB();
+
+        currentShow = ((MainActivity) cv).
+
+                getLtoB();
 
         return true;
     }
@@ -146,7 +199,9 @@ public class CfView extends FrameLayout {
         if (currentView != null)
             if (currentView instanceof TextView)
                 currentView.setBackgroundColor(Color.argb(0, 0, 0, 0));
+        lastView = currentView;
         currentView = null;
+
         MODE = NONE;
     }
 
@@ -237,9 +292,23 @@ public class CfView extends FrameLayout {
 
 //            v.getX() + v.getY();
         }
-
-
     }
 
+    private boolean DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
+        float _x = pos1.first - pos2.first;
+        float _y = pos1.second - pos2.second;
+        double _1 = Math.sqrt(_x * _x + _y * _y);       // 과거점
+        float x = p1.first - p2.first;
+        float y = p1.second - p2.second;
+        double _2 = Math.sqrt(x * x + y * y);       // 현재점
+
+        Log.e(TAG, "===============");
+        Log.e(TAG, "DistantFar: " + (_1 < _2));
+        Log.e(TAG, "             : " + "(" + pos1.first + ", " + pos1.second + "), (" + pos2.first + ", " + pos2.second + ")");
+        Log.e(TAG, "             : " + "(" + p1.first + ", " + p1.second + "), (" + p2.first + ", " + p2.second + ")");
+        Log.e(TAG, "===============");
+
+        return _1 < _2;
+    }
 
 }
