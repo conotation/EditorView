@@ -43,4 +43,5 @@
     <string name="file_provider_authorities">com.yalantis.ucrop.provider</string>
     <string name="close_text">카드뉴스 작성을 취소</string>
     <string name="background_resource">background_resource.png</string>
+    <string name="input">텍스트 편집</string>
 </resources>

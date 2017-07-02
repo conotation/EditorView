@@ -1,6 +1,7 @@
 package cf.connotation.editorview;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.ContentResolver;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -21,10 +22,13 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Pair;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -54,6 +58,7 @@ public class MainActivity extends BaseActivity {
 
     private final int REQUEST_SELECT_PICTURE = 0x01;
     protected int NOW_EDITING = 1;
+    private boolean _dialog = false;
 
     private final int EDITING_TEXT = 0;
     private final int EDITING_VIEW = 1;
@@ -144,9 +149,13 @@ public class MainActivity extends BaseActivity {
                 tv.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        if (cf.getLocked())
-                            // Alert창을 띄워 텍스트 수정
+                        if (NOW_EDITING == EDITING_TEXT) {
+                            if (!_dialog)
+                                showXDialog(tv);
+                        } else if (cf.getLocked()) {
                             return false;
+                        }
+
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
                                 cf.setFlag(true, tv);
@@ -169,6 +178,57 @@ public class MainActivity extends BaseActivity {
 //
 //            }
 //        });
+
+        binding.btnStudioBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
+
+    }
+
+    private void showXDialog(final TextView tv) {
+        LayoutInflater dialog = LayoutInflater.from(this);
+        final View dialogLayout = dialog.inflate(R.layout.modi_view, null);
+        final Dialog xDialog = new Dialog(this);
+
+        xDialog.setTitle("텍스트 변경");
+        xDialog.setContentView(dialogLayout);
+        xDialog.show();
+
+        xDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+            @Override
+            public void onCancel(DialogInterface dialogInterface) {
+                _dialog = false;
+            }
+        });
+
+        EditText editModi = dialogLayout.findViewById(R.id.modi_edit);
+        editModi.setText(tv.getText().toString());
+        _dialog = true;
+        Button posbtn = dialogLayout.findViewById(R.id.modi_pos);
+        Button negbtn = dialogLayout.findViewById(R.id.modi_neg);
+
+        posbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String s = ((TextView) dialogLayout.findViewById(R.id.modi_edit)).getText().toString();
+                tv.setText(s);
+                _dialog = false;
+                xDialog.dismiss();
+            }
+        });
+
+        negbtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                _dialog = false;
+                xDialog.cancel();
+            }
+        });
+
+
     }
 
     private void init() {
@@ -192,6 +252,7 @@ public class MainActivity extends BaseActivity {
         if (NOW_EDITING == EDITING_TEXT) {
             binding.editorHigh.setVisibility(GONE);
             binding.editorLow.setVisibility(VISIBLE);
+            _dialog = false;
             NOW_EDITING = EDITING_VIEW;
         } else {
             showAlertDialog(getString(R.string.app_name), getString(R.string.close_text),
@@ -413,7 +474,6 @@ public class MainActivity extends BaseActivity {
         input.close();
         return bitmap;
     }
-
 
     public Bitmap getBitmap(ContentResolver cr,
                             Uri url,

@@ -76,30 +76,20 @@ public class CfView extends FrameLayout {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-//        Log.e(TAG, "onTouchEvent: " + event.getAction());
-//        Log.e(TAG, "onTouchEvent: " + event.getPointerCount());
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_UP:       // (1)
                 MODE = NONE;
                 pos1 = Pair.create(0f, 0f);
                 pos2 = Pair.create(0f, 0f);
                 setFlag(false);
-//                Log.e(TAG, "onTouchEvent: UP");
                 break;
-
-//            case 1:       // 추후 좌표값으로 수정해야될듯
 
             case MotionEvent.ACTION_POINTER_DOWN:   // ( 5 )  > 1
                 MODE = ZOOM;
-//                Log.e(TAG, "onTouchEvent: ZOOM");
-
                 break;
 
             case MotionEvent.ACTION_DOWN:
-//                Log.e(TAG, "onTouchEvent: DOWN");
             case MotionEvent.ACTION_MOVE:
-//                Log.e(TAG, "onTouchEvent: MOVE" + "  /  v:" + (currentView != null));
-//                Log.e(TAG, "onTouchEvent: m:" + MODE);
                 if (currentView == null)
                     return true;
                 if (event.getPointerCount() == 2) {
@@ -148,7 +138,7 @@ public class CfView extends FrameLayout {
                     MODE = MOVE;
                     currentView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
                     if (currentView instanceof LinearLayout) {
-                        if (event.getX() < currentView.getX() || event.getX() > currentView.getX() + currentView.getMeasuredWidth() || event.getY() < currentView.getY() || event.getY() > currentView.getY() + currentView.getHeight()) {
+                        if (event.getX() - 5 < currentView.getX() || event.getX() + 5 > currentView.getX() + currentView.getMeasuredWidth() || event.getY() - 5 < currentView.getY() || event.getY() > currentView.getY() + currentView.getHeight() + 5) {
                             setFlag(false);
                             return true;
                         }
@@ -166,9 +156,7 @@ public class CfView extends FrameLayout {
                 break;
         }
 
-        currentShow = ((MainActivity) cv).
-
-                getLtoB();
+        currentShow = ((MainActivity) cv).getLtoB();
 
         return true;
     }
