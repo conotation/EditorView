@@ -179,6 +179,21 @@ public class MainActivity extends BaseActivity {
 //            }
 //        });
 
+        binding.btnStudioTextcolor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int cv = cf.getCVInstance();
+                if(cv == -1)
+                    Toast.makeText(MainActivity.this, "카드를 선택해주세요", Toast.LENGTH_SHORT).show();
+                else if(cv == 0)
+                    Toast.makeText(MainActivity.this, "텍스트의 색을 바꾸는 기능입니다", Toast.LENGTH_SHORT).show();
+                else {
+                    cf.changeColor();   // TODO 파레트 추가 (!)
+                }
+            }
+        });
+
+
         binding.btnStudioBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

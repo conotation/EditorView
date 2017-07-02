@@ -157,7 +157,6 @@ public class CfView extends FrameLayout {
         }
 
         currentShow = ((MainActivity) cv).getLtoB();
-
         return true;
     }
 
@@ -257,6 +256,27 @@ public class CfView extends FrameLayout {
     public void addPage(Page p) {
         // __addPage__
         pag.addArr(p);
+    }
+
+    public int getCVInstance() {
+        if (currentView == null) {
+            return -1;
+        } else if (currentView instanceof LinearLayout) {
+            return 0;
+        } else if (currentView instanceof TextView) {
+            return 1;
+        }
+        return -1;
+    }
+
+    public void changeColor() {
+        for (int i = 0; i < cardList.size(); i++) {
+            if (currentView == cardList.get(i)) {
+                ((TextView) currentView).setTextColor(Color.parseColor("#00ff22"));     // TODO 파레트 추가
+                cardList.remove(i);
+                cardList.add(i, currentView);
+            }
+        }
     }
 
     public void movePage(int x) {
