@@ -1,6 +1,7 @@
 package cf.connotation.editorview;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.annotation.AttrRes;
@@ -8,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
@@ -17,6 +19,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.flask.colorpicker.ColorPickerView;
+import com.flask.colorpicker.builder.ColorPickerClickListener;
+import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
 import java.util.ArrayList;
 
@@ -269,14 +275,35 @@ public class CfView extends FrameLayout {
         return -1;
     }
 
-    public void changeColor() {
-        for (int i = 0; i < cardList.size(); i++) {
-            if (currentView == cardList.get(i)) {
-                ((TextView) currentView).setTextColor(Color.parseColor("#00ff22"));     // TODO 파레트 추가
-                cardList.remove(i);
-                cardList.add(i, currentView);
-            }
-        }
+    public void changeColor(String tmp) {
+        final hexColor h = new hexColor();
+        h.setColor(tmp);
+        ColorPickerDialogBuilder
+                .with(cv)
+                .setTitle("색 선택")
+                .initialColor(Color.parseColor(h.getColor()))
+                .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
+                .lightnessSliderOnly()
+                .density(12)
+                .setPositiveButton("완료", new ColorPickerClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
+                        h.setColor(Integer.toHexString(selectedColor));
+                        Log.e(TAG, "onClick: " + Integer.toHexString(selectedColor) + " / / / " + h.getColor());
+                        ((MainActivity) cv).setCurrentColor(h.getColor());
+                        ((InText) currentView).setTextColor(Color.parseColor(h.getColor()), h.getColor());
+
+                        dialog.dismiss();
+                    }
+                })
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })
+                .build()
+                .show();
     }
 
     public void movePage(int x) {
@@ -310,5 +337,34 @@ public class CfView extends FrameLayout {
         double _2 = Math.sqrt(x * x + y * y);       // 현재점
 
         return _1 < _2;
+    }
+
+    public class hexColor {
+        private String s;
+
+        public hexColor() {
+
+        }
+
+        public void setColor(int i1, int i2, int i3) {
+            s = Integer.toHexString(i1)
+                    + Integer.toHexString(i2)
+                    + Integer.toHexString(i3);
+        }
+
+        public void setColor(String s) {
+            if (s.length() == 8) {
+                this.s = s.substring(2);
+            } else if (s.length() == 7) {
+                this.s = s.substring(1);
+            } else {
+                this.s = s;
+            }
+        }
+
+        public String getColor() {
+            return "#" + s;
+        }
+
     }
 }

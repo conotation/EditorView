@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -52,6 +53,7 @@ public class MainActivity extends BaseActivity {
     protected CfView cf;
     protected RecyclerView rv;
     protected RecyclerView.Adapter rvAdapter;
+    protected ArrayList<Page> alp = new ArrayList<>();
 //    protected ArrayList<fragData> fragDataArrayList;
 
     private final String TAG = "MainActivityCf";
@@ -59,6 +61,7 @@ public class MainActivity extends BaseActivity {
     private final int REQUEST_SELECT_PICTURE = 0x01;
     protected int NOW_EDITING = 1;
     private boolean _dialog = false;
+    private String _current_color = "#000000";
 
     private final int EDITING_TEXT = 0;
     private final int EDITING_VIEW = 1;
@@ -129,6 +132,7 @@ public class MainActivity extends BaseActivity {
             public void onClick(View v) {
                 binding.editorLow.setVisibility(GONE);
                 binding.editorHigh.setVisibility(VISIBLE);
+                if (!cf.getLocked()) cf.setLocked();
                 NOW_EDITING = EDITING_TEXT;
             }
         });
@@ -136,15 +140,14 @@ public class MainActivity extends BaseActivity {
         binding.btnStudioTextAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final TextView tv = new TextView(getApplicationContext());
-                tv.setText("for Test");
+                final InText tv = new InText(getApplicationContext());
+                tv.setText("텍스트를 변경해주세요");
                 tv.setTextSize(binding.btnStudioTextSlidesize.getProgress());
-                tv.setTextColor(Color.BLACK);
                 Log.e(TAG, "onClick: " + binding.studioSpinner.getSelectedItemPosition());
                 if (binding.studioSpinner.getSelectedItemPosition() == 0) {
-                    tv.setTypeface(FontBinder.get("NanumGothic"));
+                    tv.setTypeface(FontBinder.get("NanumGothic"), "NanumGothic");
                 } else {
-                    tv.setTypeface(FontBinder.get("NanumSquareB"));
+                    tv.setTypeface(FontBinder.get("NanumSquareB"), "NanumSquareB");
                 }
                 tv.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -183,16 +186,15 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View view) {
                 int cv = cf.getCVInstance();
-                if(cv == -1)
+                if (cv == -1)
                     Toast.makeText(MainActivity.this, "카드를 선택해주세요", Toast.LENGTH_SHORT).show();
-                else if(cv == 0)
+                else if (cv == 0)
                     Toast.makeText(MainActivity.this, "텍스트의 색을 바꾸는 기능입니다", Toast.LENGTH_SHORT).show();
                 else {
-                    cf.changeColor();   // TODO 파레트 추가 (!)
+                    cf.changeColor(_current_color);   // TODO 파레트 추가 (!)
                 }
             }
         });
-
 
         binding.btnStudioBack.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,6 +259,20 @@ public class MainActivity extends BaseActivity {
         rv = binding.cyclerView;
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        /*LastAdapter la = new LastAdapter(alp, BR.item)
+                .handler(typeHandler)
+                .into(recyclerView);
+
+        private LayoutHandler typeHandler = new LayoutHandler() {
+            @Override public int getItemLayout(@NotNull Object item, int position) {
+                if (item instanceof Header) {
+                    return (position == 0) ? R.layout.item_header_first : R.layout.item_header;
+                } else {
+                    return R.layout.item_point;
+                }
+            }
+        };*/
 
         rv.setAdapter(rvAdapter);
 
@@ -334,21 +350,13 @@ public class MainActivity extends BaseActivity {
             final Uri uri = UCrop.getOutput(i);
             if (drawFlag) {
                 drawFlag = false;
-//                BitmapFactory.Options options = new BitmapFactory.Options();
-//                options.inJustDecodeBounds = true;
-//                BitmapFactory.decodeStream(getResources(), , options); // inJustDecodeBounds 설정을 해주지 않으면 이부분에서 큰 이미지가 들어올 경우 outofmemory Exception이 발생한다.
-//                int imageHeight = options.outHeight;
-//                int imageWidth = options.outWidth;
-//                String imageType = options.outMimeType;
                 final BitmapFactory.Options options = new BitmapFactory.Options();
                 options.inSampleSize = 2;
 
                 Bitmap b = getBitmap(getContentResolver(), uri, options);
-//                Bitmap b = getBitmap(getContentResolver(), uri);
 
                 // TODO 이미지 카드 만들기
                 final LinearLayout layout = new LinearLayout(this);
-//                final ImageView iv = new ImageView(this);
                 final int _width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360 * b.getWidth() / (b.getWidth() + b.getHeight()), getResources().getDisplayMetrics());
                 final int _height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360 * b.getHeight() / (b.getWidth() + b.getHeight()), getResources().getDisplayMetrics());
                 layout.setLayoutParams(new LinearLayoutCompat.LayoutParams(_width, _height));
@@ -361,8 +369,6 @@ public class MainActivity extends BaseActivity {
                             return false;
                         switch (event.getAction() & MotionEvent.ACTION_MASK) {
                             case MotionEvent.ACTION_UP:
-//                                Log.e(TAG, "onTouch: UP");
-//                                cf.setFlag(true, layout);
                                 cf.MODE = CfView.NONE;
                                 cf.setFlag(false);
                                 break;
@@ -372,9 +378,7 @@ public class MainActivity extends BaseActivity {
                                 cf.onTouchEvent(event);
                                 break;
                             case MotionEvent.ACTION_DOWN:
-//                                Log.e(TAG, "onTouch: DOWN");
                             case MotionEvent.ACTION_MOVE:
-//                                Log.e(TAG, "onTouch: MOVE");
                                 cf.MODE = CfView.MOVE;
                                 cf.setFlag(true, layout);
                                 break;
@@ -383,49 +387,7 @@ public class MainActivity extends BaseActivity {
                     }
                 });
                 Log.e(TAG, "CropResult: " + b.getWidth() + " / " + b.getHeight());
-//                iv.setScaleType(ImageView.ScaleType.CENTER);
                 cf.addDrawCard(layout, null, b);
-
-/*                // TODO 이미지 카드 만들기
-                final ImageView iv = (ImageView) getLayoutInflater().inflate(R.layout.item_inner_drawable, null);
-                LinearLayout layout = new LinearLayout(this);
-//                final ImageView iv = new ImageView(this);
-                final int _width = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360 * b.getWidth() / (b.getWidth() + b.getHeight()), getResources().getDisplayMetrics());
-                final int _height = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 360 * (1 - b.getWidth() / (b.getWidth() + b.getHeight())), getResources().getDisplayMetrics());
-                iv.setLayoutParams(new LinearLayoutCompat.LayoutParams(_width, _height));
-                iv.setImageBitmap(b);
-                iv.setOnTouchListener(new View.OnTouchListener() {
-                    @Override
-                    public boolean onTouch(View v, MotionEvent event) {
-                        if (cf.getLocked())
-                            return false;
-                        switch (event.getAction()) {
-                            case MotionEvent.ACTION_UP:
-                                cf.setFlag(true, iv);
-                                break;
-                            case MotionEvent.ACTION_POINTER_DOWN:
-                                Pair<Float, Float> pos1;
-                                Pair<Float, Float> pos2;
-                                if (cf.pos1 != Pair.create(0f, 0f)) {
-                                    cf.pos1 = Pair.create(event.getX(0), event.getY(1));
-                                    cf.pos2 = Pair.create(event.getX(1), event.getY(1));
-                                } else {    //
-                                    pos1 = Pair.create(event.getX(0), event.getY(1));
-                                    pos2 = Pair.create(event.getX(1), event.getY(1));
-                                    DistantFar(pos1, pos2);
-                                }
-
-                                break;
-                            case MotionEvent.ACTION_DOWN:
-                                cf.setFlag(false);
-                                break;
-                        }
-                        return true;
-                    }
-                });
-                Log.e(TAG, "CropResult: " + b.getWidth() + " / " + b.getHeight());
-//                iv.setScaleType(ImageView.ScaleType.CENTER);
-                cf.addDrawCard(iv, null, b);*/
             } else {
                 Bitmap b = getBitmap(getContentResolver(), uri);
                 cf.setCardBackground(b);
@@ -471,11 +433,6 @@ public class MainActivity extends BaseActivity {
      */
 
     public Bitmap getLtoB() {
-//        Bitmap snapshot = null;       //TODO 누군가 NullPointer를 해결해주세요
-//        cf.buildDrawingCache(true);
-//        snapshot = Bitmap.createBitmap(cf.getDrawingCache());
-//        cf.setDrawingCacheEnabled(false);
-
         Bitmap snapshot = Bitmap.createBitmap(cf.getWidth(), cf.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(snapshot);
         cf.draw(canvas);
@@ -498,6 +455,14 @@ public class MainActivity extends BaseActivity {
         Bitmap bitmap = BitmapFactory.decodeStream(input, null, options);
         input.close();
         return bitmap;
+    }
+
+    public void setCurrentColor(String s) {
+        if (s.length() != 7)
+            Toast.makeText(this, "Error", Toast.LENGTH_SHORT).show();
+        _current_color = s.substring(1);
+        GradientDrawable bgShape = (GradientDrawable) binding.studioIvColor.getBackground();
+        bgShape.setColor(Color.parseColor(s));
     }
 
 

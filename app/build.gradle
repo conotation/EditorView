@@ -35,4 +35,6 @@ dependencies {
     compile 'com.github.ganfra:material-spinner:1.1.1'
     compile 'com.android.support:recyclerview-v7:26.0.0-alpha1'
     compile 'com.android.support:appcompat-v7:26.0.0-alpha1'
+    compile 'com.github.nitrico.lastadapter:lastadapter:2.2.2'
+    compile 'com.github.QuadFlask:colorpicker:0.0.13'
 }
