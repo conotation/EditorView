@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Created by Conota on 2017-06-27.
  */
 
-public class Page {
+class Page {
     private ArrayList card;
     private ArrayList draw;
     private ArrayList bitmap;
@@ -23,23 +23,23 @@ public class Page {
         this.page = page;
     }
 
-    public ArrayList getBitmap() {
+    ArrayList getBitmap() {
         return bitmap;
     }
 
-    public ArrayList getCard() {
+    ArrayList getCard() {
         return card;
     }
 
-    public ArrayList getDraw() {
+    ArrayList getDraw() {
         return draw;
     }
 
-    public Bitmap getBack() {
+    Bitmap getBack() {
         return back;
     }
 
-    public int getPage(){
+    int getPage() {
         return page;
     }
 }

@@ -29,6 +29,13 @@ public class InText extends android.support.v7.widget.AppCompatTextView {
         super.setTextColor(color);
     }
 
+    public String get_color() {
+        return _color;
+    }
+
+    public String get_font() {
+        return _font;
+    }
 
     public InText(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);

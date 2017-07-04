@@ -319,13 +319,22 @@ public class CfView extends FrameLayout {
     }
 
     public void createTempPage() {
-        Bitmap resb = back_resource;
-        String res = "";
-        for (int i = 0; i < cardList.size(); i++) {
-            View v = (View) cardList.get(i);
+        Bitmap resb = back_resource;        // TODO getFile
+        PageExt ext = new PageExt();
+        ext.setPage(page);
+        ext.setResCount(Pair.create(cardList.size(), drawList.size()));
 
-//            v.getX() + v.getY();
+        for (int i = 0; i < cardList.size(); i++) {
+            InText v = (InText) cardList.get(i);
+            ResManager resManager = new ResManager(v.getText().toString(), v.getX(), v.getY(), Math.round(v.getTextSize()), v.get_font(), v.get_color());
+            ext.addResTxt(resManager);
         }
+
+        for (int i = 0; i < drawList.size(); i++) {
+            View v = drawList.get(i);
+
+        }
+
     }
 
     private boolean DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
@@ -339,10 +348,10 @@ public class CfView extends FrameLayout {
         return _1 < _2;
     }
 
-    public class hexColor {
+    private class hexColor {
         private String s;
 
-        public hexColor() {
+        hexColor() {
 
         }
 
