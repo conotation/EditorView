@@ -256,10 +256,11 @@ public class CfView extends FrameLayout {
         iv.setImageBitmap(b);
     }
 
-    public void addPage() {
+    public Page addPage() {
         // TODO 페이지 추가
         Page p = new Page(cardList, drawList, drawSubList, back_resource, page);
         addPage(p);
+        return p;
     }
 
     public void addPage(Page p) {
@@ -312,7 +313,7 @@ public class CfView extends FrameLayout {
     public void movePage(int x) {
         // TODO 페이지 이동 구현
         setFlag(false);
-        addPage(new Page(cardList, drawList, drawSubList, back_resource, page));
+        addPage(new Page(cardList, drawList, drawSubList, back_resource, page + 1));
         Page p = pag.returnPage(x);
         cardList = p.getCard();
         drawList = p.getDraw();

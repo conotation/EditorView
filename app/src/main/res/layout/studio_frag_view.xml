@@ -23,7 +23,7 @@
         android:paddingLeft="12dp"
         android:paddingRight="12dp"
         android:background="?attr/selectableItemBackground"
-        android:onClick="@{() -> activity.onMovePage(position)}">
+        android:onClick="@{() -> activity.movePage(position)}">
 
         <View
             android:layout_alignParentTop="true"

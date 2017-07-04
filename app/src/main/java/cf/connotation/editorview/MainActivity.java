@@ -56,7 +56,6 @@ public class MainActivity extends BaseActivity {
     protected ActivityMainBinding binding;
     protected CfView cfv;
     protected RecyclerView rv;
-    protected RecyclerView.Adapter rvAdapter;
     protected LastAdapter adapter;
     protected ArrayList<Page> alp = new ArrayList<>();
 
@@ -78,7 +77,6 @@ public class MainActivity extends BaseActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         init();
 
-        cfv = binding.cfview;
         cfv.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -178,14 +176,7 @@ public class MainActivity extends BaseActivity {
                 cfv.addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
         });
-        binding.fragCover.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-//        binding.fragCover.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
+
 
         binding.btnStudioTextcolor.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -254,6 +245,8 @@ public class MainActivity extends BaseActivity {
     }
 
     private void init() {
+        cfv = binding.cfview;
+
         List<String> data = new ArrayList<>();
         data.add("NanumGothic");
         data.add("NanumSquareB");
@@ -265,31 +258,18 @@ public class MainActivity extends BaseActivity {
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        adapter = new LastAdapter(alp, null)
+        adapter = new LastAdapter(alp, cf.connotation.editorview.BR.content)
                 .map(ShowPage.class, new ItemType<StudioFragViewBinding>(R.layout.studio_frag_view) {
                     @Override
                     public void onBind(Holder<StudioFragViewBinding> holder) {
                         super.onBind(holder);
+                        holder.getBinding().setActivity(MainActivity.this);
+                        holder.getBinding().setPosition(holder.getLayoutPosition());
                     }
                 })
                 .into(rv);
 
-        /*LastAdapter la = new LastAdapter(alp, BR.item)
-                .handler(typeHandler)
-                .into(recyclerView);
-
-        private LayoutHandler typeHandler = new LayoutHandler() {
-            @Override public int getItemLayout(@NotNull Object item, int position) {
-                if (item instanceof Header) {
-                    return (position == 0) ? R.layout.item_header_first : R.layout.item_header;
-                } else {
-                    return R.layout.item_point;
-                }
-            }
-        };*/
-
-        rv.setAdapter(rvAdapter);
-
+//        alp.add(cfv.addPage());
     }
 
     @Override
@@ -477,6 +457,10 @@ public class MainActivity extends BaseActivity {
         _current_color = s.substring(1);
         GradientDrawable bgShape = (GradientDrawable) binding.studioIvColor.getBackground();
         bgShape.setColor(Color.parseColor(s));
+    }
+
+    public void movePage(int position){
+
     }
 
 
