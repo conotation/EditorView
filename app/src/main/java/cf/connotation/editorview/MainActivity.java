@@ -121,6 +121,7 @@ public class MainActivity extends BaseActivity {
             public void onClick(View v) {
                 try {   // TODO 하단부 리스트에 그려주기
                     //getLtoB();   // 일단은 그리기 종료
+                    cf.createIndiFormat();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -432,7 +433,7 @@ public class MainActivity extends BaseActivity {
      * Layout to Image
      */
 
-    public Bitmap getLtoB() {
+    public Bitmap getLtoB() {   // LinearLayout to Bitmap
         Bitmap snapshot = Bitmap.createBitmap(cf.getWidth(), cf.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(snapshot);
         cf.draw(canvas);

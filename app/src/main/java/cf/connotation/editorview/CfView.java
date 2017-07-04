@@ -24,6 +24,9 @@ import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 /**
@@ -318,23 +321,26 @@ public class CfView extends FrameLayout {
         page = p.getPage();
     }
 
-    public void createTempPage() {
-        Bitmap resb = back_resource;        // TODO getFile
+    public void createIndiFormat() {
         PageExt ext = new PageExt();
+        ext.setMainImg(bTof(currentShow, "show"));
         ext.setPage(page);
         ext.setResCount(Pair.create(cardList.size(), drawList.size()));
-
-        for (int i = 0; i < cardList.size(); i++) {
-            InText v = (InText) cardList.get(i);
-            ResManager resManager = new ResManager(v.getText().toString(), v.getX(), v.getY(), Math.round(v.getTextSize()), v.get_font(), v.get_color());
-            ext.addResTxt(resManager);
-        }
+        ext.setResBack(bTof(back_resource, "back"));
 
         for (int i = 0; i < drawList.size(); i++) {
             View v = drawList.get(i);
-
+            ResManager resManager = new ResManager(bTof(drawSubList.get(i), "f" + i), v.getX(), v.getY(), v.getWidth(), v.getHeight());
+            ext.addResImg(resManager);
         }
 
+        for (int i = 0; i < cardList.size(); i++) {
+            InText v = (InText) cardList.get(i);
+            ResManager resManager = new ResManager(v.getText().toString(), v.getX(), v.getY(), Math.round(v.get_size()), v.get_font(), v.get_color());
+            ext.addResTxt(resManager);
+        }
+
+        ext.log();
     }
 
     private boolean DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
@@ -375,5 +381,19 @@ public class CfView extends FrameLayout {
             return "#" + s;
         }
 
+    }
+
+    public File bTof(Bitmap b, String s) {
+        File f = new File(cv.getExternalCacheDir() + "/" + s);
+        OutputStream out = null;
+        try {
+            f.createNewFile();
+            out = new FileOutputStream(f);
+            b.compress(Bitmap.CompressFormat.PNG, 100, out);
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return f;
     }
 }

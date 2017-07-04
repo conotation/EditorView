@@ -7,7 +7,7 @@ import java.io.File;
  */
 
 public class ResManager {
-    private File fname;        // img
+    private File img;        // img
     private String txt;          // txt
     private float x;
     private float y;
@@ -18,8 +18,8 @@ public class ResManager {
     private String color;       // txt
     private boolean _img = false;
 
-    public ResManager(File fname, float x, float y, int width, int height) {
-        this.fname = fname;
+    public ResManager(File img, float x, float y, int width, int height) {
+        this.img = img;
         this.x = x;
         this.y = y;
         this.width = width;
@@ -36,8 +36,16 @@ public class ResManager {
         this.color = color;
     }
 
-    public File getFname() {
-        return fname;
+    public File getImg() {
+        return img;
+    }
+
+    public String getImgName() {
+        return img.getAbsolutePath();
+    }
+
+    public String getTxt() {
+        return txt;
     }
 
     public float getX() {
@@ -62,5 +70,23 @@ public class ResManager {
 
     public String getFont() {
         return font;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public String getImgData() {
+        String result = "[\"" + getImgName() + "\"" +
+                ", " + getX() + ", " + getY() +
+                ", " + getWidth() + ", " + getHeight() + "]";
+        return result;
+    }
+
+    public String getTxtData() {
+        String result = "[\"" + getTxt() + "\"" +
+                ", " + getX() + ", " + getY() +
+                ", " + getSize() + ", " + getFont() + ", " + getColor() + "]";
+        return result;
     }
 }

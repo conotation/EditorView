@@ -1,5 +1,6 @@
 package cf.connotation.editorview;
 
+import android.util.Log;
 import android.util.Pair;
 
 import java.io.File;
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  * Created by Conota on 2017-07-04.
  */
 
-public class PageExt {
+class PageExt {
     private File main_img;
     private int page;
     private Pair<Integer, Integer> res_count;
@@ -17,32 +18,72 @@ public class PageExt {
     private ArrayList<ResManager> res_img = new ArrayList<>();
     private ArrayList<ResManager> res_txt = new ArrayList<>();
 
-    public PageExt() {
+    PageExt() {
 
     }
 
-    public void setPage(int page) {
+    void setPage(int page) {
         this.page = page;
     }
 
-    public void setResCount(Pair<Integer, Integer> res_count) {
+    void setResCount(Pair<Integer, Integer> res_count) {
         this.res_count = res_count;
     }
 
-    public void setMainImg(File img) {
+    void setMainImg(File img) {
         this.main_img = img;
     }
 
-    public void setResBack(File img) {
+    void setResBack(File img) {
         this.res_back = img;
     }
 
-    public void addResImg(ResManager res) {
+    void addResImg(ResManager res) {
         res_img.add(res);
     }
 
-    public void addResTxt(ResManager res) {
+    void addResTxt(ResManager res) {
         res_txt.add(res);
+    }
+
+    File getMainImg() {
+        return main_img;
+    }
+
+    String getMainImgName() {
+        return main_img.getAbsolutePath();
+    }
+
+    File getResBack() {
+        return res_back;
+    }
+
+    String getResBackName() {
+        return res_back.getAbsolutePath();
+    }
+
+
+    void log() {
+        String result = "{" +
+                "\"main_img\": " + getMainImgName() +
+                ", \"page\": " + page +
+                ", \"res_count\": [" + res_count.first + ", " + res_count.second +
+                "], \"res_back\": " + getResBackName() +
+                ", \"res_img\": [";
+
+        for (ResManager r : res_img) {
+            result = result + r.getImgData() + ", ";
+        }
+
+        result = result + "], \"res_txt\": [";
+
+        for (ResManager r : res_txt) {
+            result = result + r.getTxtData() + ", ";
+        }
+
+        result = result + "] }";
+
+        Log.e("PageExt", result );
     }
 
 

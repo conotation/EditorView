@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 public class InText extends android.support.v7.widget.AppCompatTextView {
     private String _font;
     private String _color;
+    private float _size;
 
     public InText(Context context) {
         super(context);
@@ -35,6 +36,16 @@ public class InText extends android.support.v7.widget.AppCompatTextView {
 
     public String get_font() {
         return _font;
+    }
+
+    public float get_size() {
+        return _size;
+    }
+
+    @Override
+    public void setTextSize(float size) {
+        _size = size;
+        super.setTextSize(size);
     }
 
     public InText(Context context, @Nullable AttributeSet attrs) {
