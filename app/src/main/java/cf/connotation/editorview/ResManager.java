@@ -77,16 +77,16 @@ public class ResManager {
     }
 
     public String getImgData() {
-        String result = "[\"" + getImgName() + "\"" +
+        String result = " [ \"" + getImgName() + "\"" +
                 ", " + getX() + ", " + getY() +
-                ", " + getWidth() + ", " + getHeight() + "]";
+                ", " + getWidth() + ", " + getHeight() + " ] ";
         return result;
     }
 
     public String getTxtData() {
-        String result = "[\"" + getTxt() + "\"" +
+        String result = " [ \"" + getTxt() + "\"" +
                 ", " + getX() + ", " + getY() +
-                ", " + getSize() + ", " + getFont() + ", " + getColor() + "]";
+                ", " + getSize() + ", " + getFont() + ", " + getColor() + " ] ";
         return result;
     }
 }

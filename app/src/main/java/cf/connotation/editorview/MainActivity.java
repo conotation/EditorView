@@ -35,6 +35,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.github.nitrico.fontbinder.FontBinder;
+import com.github.nitrico.lastadapter.Holder;
+import com.github.nitrico.lastadapter.ItemType;
+import com.github.nitrico.lastadapter.LastAdapter;
 import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
@@ -44,17 +47,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cf.connotation.editorview.databinding.ActivityMainBinding;
+import cf.connotation.editorview.databinding.StudioFragViewBinding;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 public class MainActivity extends BaseActivity {
     protected ActivityMainBinding binding;
-    protected CfView cf;
+    protected CfView cfv;
     protected RecyclerView rv;
     protected RecyclerView.Adapter rvAdapter;
+    protected LastAdapter adapter;
     protected ArrayList<Page> alp = new ArrayList<>();
-//    protected ArrayList<fragData> fragDataArrayList;
 
     private final String TAG = "MainActivityCf";
 
@@ -74,13 +78,13 @@ public class MainActivity extends BaseActivity {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
         init();
 
-        cf = binding.cfview;
-        cf.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+        cfv = binding.cfview;
+        cfv.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
                 try {
                     // TODO: 비트맵 하단부 슬라이드에 넣기
-                    cf.currentShow = getLtoB();
+                    cfv.currentShow = getLtoB();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -90,14 +94,14 @@ public class MainActivity extends BaseActivity {
         binding.btnStudioMove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cf.setLocked(); // 이동 Lock
+                cfv.setLocked(); // 이동 Lock
             }
         });
 
         binding.btnStudioRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                cf.removeCard();    // 개체 삭제
+                cfv.removeCard();    // 개체 삭제
             }
         });
 
@@ -121,7 +125,7 @@ public class MainActivity extends BaseActivity {
             public void onClick(View v) {
                 try {   // TODO 하단부 리스트에 그려주기
                     //getLtoB();   // 일단은 그리기 종료
-                    cf.createIndiFormat();
+                    cfv.createIndiFormat();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -133,7 +137,7 @@ public class MainActivity extends BaseActivity {
             public void onClick(View v) {
                 binding.editorLow.setVisibility(GONE);
                 binding.editorHigh.setVisibility(VISIBLE);
-                if (!cf.getLocked()) cf.setLocked();
+                if (!cfv.getLocked()) cfv.setLocked();
                 NOW_EDITING = EDITING_TEXT;
             }
         });
@@ -156,22 +160,22 @@ public class MainActivity extends BaseActivity {
                         if (NOW_EDITING == EDITING_TEXT) {
                             if (!_dialog)
                                 showXDialog(tv);
-                        } else if (cf.getLocked()) {
+                        } else if (cfv.getLocked()) {
                             return false;
                         }
 
                         switch (event.getAction()) {
                             case MotionEvent.ACTION_DOWN:
-                                cf.setFlag(true, tv);
+                                cfv.setFlag(true, tv);
                                 break;
                             case MotionEvent.ACTION_UP:
-                                cf.setFlag(false);
+                                cfv.setFlag(false);
                                 break;
                         }
                         return true;
                     }
                 });
-                cf.addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+                cfv.addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
             }
         });
         binding.fragCover.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
@@ -186,13 +190,13 @@ public class MainActivity extends BaseActivity {
         binding.btnStudioTextcolor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                int cv = cf.getCVInstance();
+                int cv = cfv.getCVInstance();
                 if (cv == -1)
                     Toast.makeText(MainActivity.this, "카드를 선택해주세요", Toast.LENGTH_SHORT).show();
                 else if (cv == 0)
                     Toast.makeText(MainActivity.this, "텍스트의 색을 바꾸는 기능입니다", Toast.LENGTH_SHORT).show();
                 else {
-                    cf.changeColor(_current_color);   // TODO 파레트 추가 (!)
+                    cfv.changeColor(_current_color);   // TODO 파레트 추가 (!)
                 }
             }
         });
@@ -260,6 +264,15 @@ public class MainActivity extends BaseActivity {
         rv = binding.cyclerView;
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        adapter = new LastAdapter(alp, null)
+                .map(ShowPage.class, new ItemType<StudioFragViewBinding>(R.layout.studio_frag_view) {
+                    @Override
+                    public void onBind(Holder<StudioFragViewBinding> holder) {
+                        super.onBind(holder);
+                    }
+                })
+                .into(rv);
 
         /*LastAdapter la = new LastAdapter(alp, BR.item)
                 .handler(typeHandler)
@@ -366,32 +379,32 @@ public class MainActivity extends BaseActivity {
                 layout.setOnTouchListener(new View.OnTouchListener() {
                     @Override
                     public boolean onTouch(View v, MotionEvent event) {
-                        if (cf.getLocked())
+                        if (cfv.getLocked())
                             return false;
                         switch (event.getAction() & MotionEvent.ACTION_MASK) {
                             case MotionEvent.ACTION_UP:
-                                cf.MODE = CfView.NONE;
-                                cf.setFlag(false);
+                                cfv.MODE = CfView.NONE;
+                                cfv.setFlag(false);
                                 break;
                             case MotionEvent.ACTION_POINTER_DOWN:
-                                cf.setFlag(true, layout);
-                                cf.MODE = CfView.ZOOM;
-                                cf.onTouchEvent(event);
+                                cfv.setFlag(true, layout);
+                                cfv.MODE = CfView.ZOOM;
+                                cfv.onTouchEvent(event);
                                 break;
                             case MotionEvent.ACTION_DOWN:
                             case MotionEvent.ACTION_MOVE:
-                                cf.MODE = CfView.MOVE;
-                                cf.setFlag(true, layout);
+                                cfv.MODE = CfView.MOVE;
+                                cfv.setFlag(true, layout);
                                 break;
                         }
                         return true;
                     }
                 });
                 Log.e(TAG, "CropResult: " + b.getWidth() + " / " + b.getHeight());
-                cf.addDrawCard(layout, null, b);
+                cfv.addDrawCard(layout, null, b);
             } else {
                 Bitmap b = getBitmap(getContentResolver(), uri);
-                cf.setCardBackground(b);
+                cfv.setCardBackground(b);
             }
         } else {
             Toast.makeText(this, "이미지 에러 [001]", Toast.LENGTH_SHORT).show();
@@ -400,8 +413,8 @@ public class MainActivity extends BaseActivity {
 
 
     private int DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
-        float _x = cf.pos1.first - cf.pos2.first;
-        float _y = cf.pos1.second - cf.pos2.second;
+        float _x = cfv.pos1.first - cfv.pos2.first;
+        float _y = cfv.pos1.second - cfv.pos2.second;
         double _1 = Math.sqrt(_x + _y);
         float x = p1.first - p2.first;
         float y = p2.second - p2.second;
@@ -434,9 +447,9 @@ public class MainActivity extends BaseActivity {
      */
 
     public Bitmap getLtoB() {   // LinearLayout to Bitmap
-        Bitmap snapshot = Bitmap.createBitmap(cf.getWidth(), cf.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap snapshot = Bitmap.createBitmap(cfv.getWidth(), cfv.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(snapshot);
-        cf.draw(canvas);
+        cfv.draw(canvas);
         return snapshot;
     }
 
