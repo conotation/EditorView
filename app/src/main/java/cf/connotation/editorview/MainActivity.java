@@ -122,7 +122,8 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onClick(View v) {
 //                    cfv.createIndiFormat();
-                    cfv.addPage();
+                cfv.addPage();
+                adapter.notifyDataSetChanged();
             }
         });
 
@@ -249,21 +250,29 @@ public class MainActivity extends BaseActivity {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, data);
         binding.studioSpinner.setAdapter(arrayAdapter);
         binding.studioSpinner.setSelection(0);
-
-        rv = binding.cyclerView;
-        rv.setHasFixedSize(true);
-        rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+        binding.cv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         adapter = new LastAdapter(cfv.getPag().arr, cf.connotation.editorview.BR.content)
                 .map(Page.class, new ItemType<StudioFragViewBinding>(R.layout.studio_frag_view) {
                     @Override
-                    public void onBind(Holder<StudioFragViewBinding> holder) {
+                    public void onBind(final Holder<StudioFragViewBinding> holder) {
                         super.onBind(holder);
-                        holder.getBinding().setActivity(MainActivity.this);
+                        cfv.getPag().arr.get(holder.getLayoutPosition());
                         holder.getBinding().setPosition(holder.getLayoutPosition());
+                        holder.getBinding().getRoot().setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                for (Page p : cfv.getPag().arr) {
+                                    if (p.isSeleceted()) p.setSeleceted(false);
+                                }
+                                holder.getBinding().getContent().setSeleceted(true);
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
                     }
                 })
-                .into(rv);
+                .into(binding.cv);
+
 
 //        alp.add(cfv.addPage());
     }
@@ -455,8 +464,9 @@ public class MainActivity extends BaseActivity {
         bgShape.setColor(Color.parseColor(s));
     }
 
-    public void movePage(int position){
-        cfv.movePage(position+1);
+    public void movePage(int position) {
+
+
     }
 
 

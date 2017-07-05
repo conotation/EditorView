@@ -1,8 +1,7 @@
 package cf.connotation.editorview;
 
+import android.databinding.ObservableArrayList;
 import android.util.Log;
-
-import java.util.ArrayList;
 
 import static android.content.ContentValues.TAG;
 
@@ -11,12 +10,12 @@ import static android.content.ContentValues.TAG;
  */
 
 public class PageManager {
-    public ArrayList<Page> arr;
+    public ObservableArrayList<Page> arr;
     private CfView cf;
 
     public PageManager(CfView cf) {
         this.cf = cf;
-        arr = new ArrayList<>();
+        arr = new ObservableArrayList<>();
     }
 
     public void addArr(Page p) {

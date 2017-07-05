@@ -1,5 +1,6 @@
 package cf.connotation.editorview;
 
+import android.databinding.ObservableBoolean;
 import android.graphics.Bitmap;
 
 import java.util.ArrayList;
@@ -14,7 +15,9 @@ public class Page {
     private ArrayList bitmap;
     private Bitmap back;
     private int viewPage;   // NOT Page
-    private boolean seleceted = false;
+
+
+    private ObservableBoolean seleceted = new ObservableBoolean();
 
     public Page(ArrayList card, ArrayList draw, ArrayList bitmap, Bitmap b, int viewPage) {
         this.card = card;
@@ -42,5 +45,13 @@ public class Page {
 
     public int getViewPage() {
         return viewPage;
+    }
+
+    public void setSeleceted(boolean seleceted) {
+        this.seleceted.set(seleceted);
+    }
+
+    public boolean isSeleceted() {
+        return this.seleceted.get();
     }
 }
