@@ -1,14 +1,18 @@
 package cf.connotation.editorview;
 
+import android.util.Log;
+
 import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Conota on 2017-06-27.
  */
 
 public class PageManager {
-    ArrayList<Page> arr;
-    CfView cf;
+    public ArrayList<Page> arr;
+    private CfView cf;
 
     public PageManager(CfView cf) {
         this.cf = cf;
@@ -16,11 +20,12 @@ public class PageManager {
     }
 
     public void addArr(Page p) {
-        if (arr.size() < p.getPage())
+        Log.e(TAG, "arrSize: " + arr.size() + " / p.getViewPage(): " + p.getViewPage());
+        if (arr.size() < p.getViewPage())
             arr.add(p);
         else {
-            arr.remove(p.getPage() - 1);
-            arr.add(p.getPage() - 1, p);
+            arr.remove(p.getViewPage() - 1);
+            arr.add(p.getViewPage() - 1, p);
         }
         cf.count_page = arr.size();
     }

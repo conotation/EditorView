@@ -8,38 +8,39 @@ import java.util.ArrayList;
  * Created by Conota on 2017-06-27.
  */
 
-class Page {
+public class Page {
     private ArrayList card;
     private ArrayList draw;
     private ArrayList bitmap;
     private Bitmap back;
-    private int page;   // NOT Page
+    private int viewPage;   // NOT Page
+    private boolean seleceted = false;
 
-    Page(ArrayList card, ArrayList draw, ArrayList bitmap, Bitmap b, int page) {
+    public Page(ArrayList card, ArrayList draw, ArrayList bitmap, Bitmap b, int viewPage) {
         this.card = card;
         this.draw = draw;
         this.bitmap = bitmap;
         this.back = b;
-        this.page = page;
+        this.viewPage = viewPage;
     }
 
-    ArrayList getBitmap() {
+    public ArrayList getBitmap() {
         return bitmap;
     }
 
-    ArrayList getCard() {
+    public ArrayList getCard() {
         return card;
     }
 
-    ArrayList getDraw() {
+    public ArrayList getDraw() {
         return draw;
     }
 
-    Bitmap getBack() {
+    public Bitmap getBack() {
         return back;
     }
 
-    int getPage() {
-        return page;
+    public int getViewPage() {
+        return viewPage;
     }
 }

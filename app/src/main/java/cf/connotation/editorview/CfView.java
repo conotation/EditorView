@@ -259,6 +259,7 @@ public class CfView extends FrameLayout {
     public Page addPage() {
         // TODO 페이지 추가
         Page p = new Page(cardList, drawList, drawSubList, back_resource, page);
+        page = page + 1;
         addPage(p);
         return p;
     }
@@ -319,7 +320,7 @@ public class CfView extends FrameLayout {
         drawList = p.getDraw();
         drawSubList = p.getBitmap();
         back_resource = p.getBack();
-        page = p.getPage();
+        page = p.getViewPage();
     }
 
     public void createIndiFormat() {
@@ -396,5 +397,9 @@ public class CfView extends FrameLayout {
             e.printStackTrace();
         }
         return f;
+    }
+
+    public PageManager getPag() {
+        return pag;
     }
 }

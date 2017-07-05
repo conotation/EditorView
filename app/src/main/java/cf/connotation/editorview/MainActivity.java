@@ -57,7 +57,7 @@ public class MainActivity extends BaseActivity {
     protected CfView cfv;
     protected RecyclerView rv;
     protected LastAdapter adapter;
-    protected ArrayList<Page> alp = new ArrayList<>();
+//    protected ArrayList<Page> alp = new ArrayList<>();
 
     private final String TAG = "MainActivityCf";
 
@@ -121,12 +121,8 @@ public class MainActivity extends BaseActivity {
         binding.btnStudioDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {   // TODO 하단부 리스트에 그려주기
-                    //getLtoB();   // 일단은 그리기 종료
-                    cfv.createIndiFormat();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+//                    cfv.createIndiFormat();
+                    cfv.addPage();
             }
         });
 
@@ -258,8 +254,8 @@ public class MainActivity extends BaseActivity {
         rv.setHasFixedSize(true);
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
-        adapter = new LastAdapter(alp, cf.connotation.editorview.BR.content)
-                .map(ShowPage.class, new ItemType<StudioFragViewBinding>(R.layout.studio_frag_view) {
+        adapter = new LastAdapter(cfv.getPag().arr, cf.connotation.editorview.BR.content)
+                .map(Page.class, new ItemType<StudioFragViewBinding>(R.layout.studio_frag_view) {
                     @Override
                     public void onBind(Holder<StudioFragViewBinding> holder) {
                         super.onBind(holder);
@@ -324,7 +320,7 @@ public class MainActivity extends BaseActivity {
                 }
             } else if (requestCode == UCrop.REQUEST_CROP) {
                 try {
-                    CropResult(data);
+                    cropResult(data);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -339,7 +335,7 @@ public class MainActivity extends BaseActivity {
      * Using UCrop Library
      */
 
-    private void CropResult(Intent i) throws Exception {
+    private void cropResult(Intent i) throws Exception {
         if (i != null) {
             final Uri uri = UCrop.getOutput(i);
             if (drawFlag) {
@@ -380,7 +376,7 @@ public class MainActivity extends BaseActivity {
                         return true;
                     }
                 });
-                Log.e(TAG, "CropResult: " + b.getWidth() + " / " + b.getHeight());
+                Log.e(TAG, "cropResult: " + b.getWidth() + " / " + b.getHeight());
                 cfv.addDrawCard(layout, null, b);
             } else {
                 Bitmap b = getBitmap(getContentResolver(), uri);
@@ -460,7 +456,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void movePage(int position){
-
+        cfv.movePage(position+1);
     }
 
 
