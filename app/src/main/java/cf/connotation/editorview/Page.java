@@ -24,6 +24,7 @@ public class Page {
         this.draw = draw;
         this.bitmap = bitmap;
         this.back = b;
+        if(viewPage == 1) seleceted.set(true);
         this.viewPage = viewPage;
     }
 

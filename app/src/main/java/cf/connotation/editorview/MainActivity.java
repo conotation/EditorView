@@ -48,6 +48,7 @@ import java.util.List;
 
 import cf.connotation.editorview.databinding.ActivityMainBinding;
 import cf.connotation.editorview.databinding.StudioFragViewBinding;
+import cf.connotation.editorview.databinding.StudioLastFooterBinding;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -250,20 +251,36 @@ public class MainActivity extends BaseActivity {
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, data);
         binding.studioSpinner.setAdapter(arrayAdapter);
         binding.studioSpinner.setSelection(0);
+
         binding.cv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
+        cfv.addPage();
+
         adapter = new LastAdapter(cfv.getPag().arr, cf.connotation.editorview.BR.content)
+                .map(FooterView.class, new ItemType<StudioLastFooterBinding>(R.layout.studio_last_footer) {
+                    @Override
+                    public void onBind(Holder<StudioLastFooterBinding> holder) {
+                        super.onBind(holder);
+                        holder.getBinding().setActivity(MainActivity.this);
+                    }
+                })
                 .map(Page.class, new ItemType<StudioFragViewBinding>(R.layout.studio_frag_view) {
                     @Override
                     public void onBind(final Holder<StudioFragViewBinding> holder) {
                         super.onBind(holder);
                         cfv.getPag().arr.get(holder.getLayoutPosition());
                         holder.getBinding().setPosition(holder.getLayoutPosition());
+                        if (cfv.getPag().arr.size() == 2) {
+                            holder.getBinding().getContent().setSeleceted(true);
+                        }
                         holder.getBinding().getRoot().setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                for (Page p : cfv.getPag().arr) {
-                                    if (p.isSeleceted()) p.setSeleceted(false);
+                                for (Object o : cfv.getPag().arr) {
+                                    if (o instanceof Page) {
+                                        Page p = (Page) o;
+                                        if (p.isSeleceted()) p.setSeleceted(false);
+                                    }
                                 }
                                 holder.getBinding().getContent().setSeleceted(true);
                                 adapter.notifyDataSetChanged();
@@ -272,8 +289,6 @@ public class MainActivity extends BaseActivity {
                     }
                 })
                 .into(binding.cv);
-
-
 //        alp.add(cfv.addPage());
     }
 
@@ -464,9 +479,9 @@ public class MainActivity extends BaseActivity {
         bgShape.setColor(Color.parseColor(s));
     }
 
-    public void movePage(int position) {
-
-
+    public void addPage() {
+        cfv.addPage();
+        adapter.notifyDataSetChanged();
     }
 
 

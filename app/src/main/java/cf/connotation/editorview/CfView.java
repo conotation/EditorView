@@ -239,7 +239,7 @@ public class CfView extends FrameLayout {
         }
 
         for (int i = 0; i < drawList.size(); i++) {
-            if (currentView.getId() == ((View) drawList.get(i)).getId()) {
+            if (currentView.getId() == (drawList.get(i)).getId()) {
                 removeView(currentView);
                 setFlag(false);
                 drawList.remove(i);
