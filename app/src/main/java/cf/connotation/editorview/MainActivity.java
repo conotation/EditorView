@@ -486,3 +486,8 @@ public class MainActivity extends BaseActivity {
 
 
 }
+
+
+/**
+ * 일 하 기 싫 다
+ */
