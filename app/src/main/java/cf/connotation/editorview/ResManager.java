@@ -8,6 +8,7 @@ import java.io.File;
 
 public class ResManager {
     private File img;        // img
+    private String img_name;
     private String txt;          // txt
     private float x;
     private float y;
@@ -18,13 +19,21 @@ public class ResManager {
     private String color;       // txt
     private boolean _img = false;
 
-    public ResManager(File img, float x, float y, int width, int height) {
+    public ResManager(File img, float x, float y, int width, int height) {  // 이미지
         this.img = img;
         this.x = x;
         this.y = y;
         this.width = width;
         this.height = height;
         _img = true;
+    }
+
+    public ResManager(String img, float x, float y, int width, int height) { // 이미지
+        this.img_name = img;
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
     }
 
     public ResManager(String txt, float x, float y, int size, String font, String color) {

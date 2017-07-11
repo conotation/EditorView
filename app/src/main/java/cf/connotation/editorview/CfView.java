@@ -256,17 +256,15 @@ public class CfView extends FrameLayout {
         iv.setImageBitmap(b);
     }
 
-    public Page addPage() {
+    public void addPage() {
         // TODO 페이지 추가
         Page p = new Page(cardList, drawList, drawSubList, back_resource, page);
         page = page + 1;
-        addPage(p);
-        return p;
+        pag.addPagePM(p);
     }
 
-    public void addPage(Page p) {
-        // __addPage__
-        pag.addArr(p);
+    public int getPage() {
+        return page;
     }
 
     public int getCVInstance() {
@@ -311,16 +309,23 @@ public class CfView extends FrameLayout {
                 .show();
     }
 
-    public void movePage(int x) {
+    public void movePage(int x) {       // position
         // TODO 페이지 이동 구현
         setFlag(false);
-        addPage(new Page(cardList, drawList, drawSubList, back_resource, page + 1));
+        pag.modPagePM(new Page(cardList, drawList, drawSubList, back_resource, page));
+        removeAllViews();
+        LinearLayout llayout = new LinearLayout(cv);        // TODO 다시 그리기
+        llayout.setId(R.id.tfv);
+        llayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        llayout.setBackgroundColor(Color.WHITE);
+        addView(llayout);
         Page p = pag.returnPage(x);
         cardList = p.getCard();
         drawList = p.getDraw();
         drawSubList = p.getBitmap();
         back_resource = p.getBack();
         page = p.getViewPage();
+
     }
 
     public void createIndiFormat() {
@@ -342,7 +347,11 @@ public class CfView extends FrameLayout {
             ext.addResTxt(resManager);
         }
 
-        ext.log();
+//        try {
+//            ext.log();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
     }
 
     private boolean DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
@@ -389,7 +398,8 @@ public class CfView extends FrameLayout {
         File f = new File(cv.getExternalCacheDir() + "/" + s);
         OutputStream out = null;
         try {
-            f.createNewFile();
+            boolean flag = f.createNewFile();
+            Log.e(TAG, "flag?: " + flag);
             out = new FileOutputStream(f);
             b.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.close();
@@ -401,5 +411,11 @@ public class CfView extends FrameLayout {
 
     public PageManager getPag() {
         return pag;
+    }
+
+    public boolean restorePage() {
+
+
+        return false;
     }
 }

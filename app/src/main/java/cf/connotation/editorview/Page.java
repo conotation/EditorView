@@ -14,8 +14,7 @@ public class Page {
     private ArrayList draw;
     private ArrayList bitmap;
     private Bitmap back;
-    private int viewPage;   // NOT Page
-
+    private int viewPage;   // NOT Page Class
 
     private ObservableBoolean seleceted = new ObservableBoolean();
 

@@ -19,7 +19,6 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.util.Pair;
 import android.util.TypedValue;
@@ -56,9 +55,7 @@ import static android.view.View.VISIBLE;
 public class MainActivity extends BaseActivity {
     protected ActivityMainBinding binding;
     protected CfView cfv;
-    protected RecyclerView rv;
     protected LastAdapter adapter;
-//    protected ArrayList<Page> alp = new ArrayList<>();
 
     private final String TAG = "MainActivityCf";
 
@@ -122,8 +119,7 @@ public class MainActivity extends BaseActivity {
         binding.btnStudioDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                    cfv.createIndiFormat();
-                cfv.addPage();
+                cfv.createIndiFormat();
                 adapter.notifyDataSetChanged();
             }
         });
@@ -256,12 +252,22 @@ public class MainActivity extends BaseActivity {
 
         cfv.addPage();
 
-        adapter = new LastAdapter(cfv.getPag().arr, cf.connotation.editorview.BR.content)
+        adapter = new LastAdapter(cfv.getPag().arr, BR.content)
                 .map(FooterView.class, new ItemType<StudioLastFooterBinding>(R.layout.studio_last_footer) {
                     @Override
                     public void onBind(Holder<StudioLastFooterBinding> holder) {
                         super.onBind(holder);
                         holder.getBinding().setActivity(MainActivity.this);
+                        holder.getBinding().btnPageAdd.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View view) {
+                                if (cfv.getPage() == 11) {
+                                    Toast.makeText(MainActivity.this, "최대 페이지는 10p입니다", Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                                addPage();
+                            }
+                        });
                     }
                 })
                 .map(Page.class, new ItemType<StudioFragViewBinding>(R.layout.studio_frag_view) {
@@ -276,12 +282,17 @@ public class MainActivity extends BaseActivity {
                         holder.getBinding().getRoot().setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                for (Object o : cfv.getPag().arr) {
+                                if (holder.getBinding().getContent().isSeleceted())
+                                    return;
+                                for (int i = 0; i < cfv.getPag().arr.size(); i++) {
+                                    Object o = cfv.getPag().arr.get(i);
                                     if (o instanceof Page) {
                                         Page p = (Page) o;
                                         if (p.isSeleceted()) p.setSeleceted(false);
+                                        Log.e(TAG, "onClick: " + cfv.getPage());
                                     }
                                 }
+                                cfv.movePage(holder.getBinding().getPosition() + 1);
                                 holder.getBinding().getContent().setSeleceted(true);
                                 adapter.notifyDataSetChanged();
                             }

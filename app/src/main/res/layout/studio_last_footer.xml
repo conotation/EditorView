@@ -16,10 +16,10 @@
         android:paddingTop="12dp">
 
         <LinearLayout
+            android:id="@+id/btn_page_add"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:background="#dddddd"
-            android:onClick="@{()->activity.addPage()}"
             android:gravity="center"
             android:layout_centerInParent="true">
 
