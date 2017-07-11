@@ -1,9 +1,6 @@
 package cf.connotation.editorview;
 
 import android.databinding.ObservableArrayList;
-import android.util.Log;
-
-import static android.content.ContentValues.TAG;
 
 /**
  * Created by Conota on 2017-06-27.
@@ -22,19 +19,24 @@ public class PageManager {
 
     public void addPagePM(Page p) {
         arr.remove(arr.size() - 1); // 지우고
-        Log.e(TAG, "arrSize1: " + arr.size() + " / p.getViewPage(): " + p.getViewPage());
+        if(p.getViewPage() > cf.count_page + 1){
+            arr.add(new FooterView());
+            return;
+        }
         arr.add(p);
         arr.add(new FooterView());  // 넣고
         cf.count_page = arr.size() - 1;
     }
 
     public void modPagePM(Page p) {
-        Log.e(TAG, "arrSize2: " + arr.size() + " / p.getViewPage(): " + p.getViewPage());
+        arr.remove(arr.size() - 1);
         arr.set(p.getViewPage() - 1, p);
+        arr.add(new FooterView());  // 넣고
     }
 
     public Page returnPage(int i) {
-        return (Page) arr.get(i - 1);  // 1페이지부터 시작
+        Page p = (Page) arr.get(i - 1);
+        return p;  // 1페이지부터 시작
     }
 
 }

@@ -40,7 +40,7 @@ public class CfView extends FrameLayout {
     private ArrayList<View> drawList = new ArrayList<>();     // Image
     private ArrayList<Bitmap> drawSubList = new ArrayList<>();     // Image Bitmap
     private int page = 1;
-    public int count_page = 1;
+    public int count_page = 0;
     public static final int NONE = 0;
     public static final int MOVE = 1;
     public static final int ZOOM = 2;
@@ -258,8 +258,7 @@ public class CfView extends FrameLayout {
 
     public void addPage() {
         // TODO 페이지 추가
-        Page p = new Page(cardList, drawList, drawSubList, back_resource, page);
-        page = page + 1;
+        Page p = new Page(cardList, drawList, drawSubList, back_resource, count_page + 1);
         pag.addPagePM(p);
     }
 
@@ -312,7 +311,7 @@ public class CfView extends FrameLayout {
     public void movePage(int x) {       // position
         // TODO 페이지 이동 구현
         setFlag(false);
-        pag.modPagePM(new Page(cardList, drawList, drawSubList, back_resource, page));
+        pag.modPagePM(new Page(cardList, drawList, drawSubList, back_resource, page, true));
         removeAllViews();
         LinearLayout llayout = new LinearLayout(cv);        // TODO 다시 그리기
         llayout.setId(R.id.tfv);

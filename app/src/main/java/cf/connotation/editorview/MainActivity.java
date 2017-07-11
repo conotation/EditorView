@@ -288,12 +288,12 @@ public class MainActivity extends BaseActivity {
                                     Object o = cfv.getPag().arr.get(i);
                                     if (o instanceof Page) {
                                         Page p = (Page) o;
-                                        if (p.isSeleceted()) p.setSeleceted(false);
-                                        Log.e(TAG, "onClick: " + cfv.getPage());
+                                        p.setSeleceted(false);
                                     }
                                 }
-                                cfv.movePage(holder.getBinding().getPosition() + 1);
+                                cfv.movePage(holder.getBinding().getPosition() + 1);        // X 페이지로 이동
                                 holder.getBinding().getContent().setSeleceted(true);
+                                ((Page) cfv.getPag().arr.get(holder.getBinding().getPosition())).setSeleceted(true);
                                 adapter.notifyDataSetChanged();
                             }
                         });

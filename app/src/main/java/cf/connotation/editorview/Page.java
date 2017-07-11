@@ -15,6 +15,7 @@ public class Page {
     private ArrayList bitmap;
     private Bitmap back;
     private int viewPage;   // NOT Page Class
+    private boolean createFlag = true;
 
     private ObservableBoolean seleceted = new ObservableBoolean();
 
@@ -23,7 +24,17 @@ public class Page {
         this.draw = draw;
         this.bitmap = bitmap;
         this.back = b;
-        if(viewPage == 1) seleceted.set(true);
+        if (viewPage == 1) seleceted.set(true);
+        this.createFlag = false;
+        this.viewPage = viewPage;
+    }
+
+    public Page(ArrayList card, ArrayList draw, ArrayList bitmap, Bitmap b, int viewPage, boolean createFlag) {
+        this.card = card;
+        this.draw = draw;
+        this.bitmap = bitmap;
+        this.back = b;
+        this.createFlag = createFlag;
         this.viewPage = viewPage;
     }
 
