@@ -10,6 +10,7 @@ import static android.content.ContentValues.TAG;
 
 /**
  * Created by Conota on 2017-06-27.
+ * - Page 객체
  */
 
 public class Page {

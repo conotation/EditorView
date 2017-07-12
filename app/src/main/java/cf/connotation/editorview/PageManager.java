@@ -4,6 +4,7 @@ import android.databinding.ObservableArrayList;
 
 /**
  * Created by Conota on 2017-06-27.
+ * - 페이지 정보 통합 관리자
  */
 
 public class PageManager {

@@ -25,13 +25,20 @@ import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 /**
  * Created by Connotation on 2017-06-03.
+ * - 에디터 본체
  */
 
 public class CfView extends FrameLayout {
@@ -336,14 +343,21 @@ public class CfView extends FrameLayout {
 
     public PageExt createIndiFormat() {
         PageExt ext = new PageExt();
-        ext.setMainImg(bTof(currentShow, "show"));
+        File folder = new File(cv.getExternalCacheDir() + "/" + page);
+        if (!folder.exists()) {
+            folder.mkdir();
+        }
+        ext.setMainImg(bTof(currentShow, "show", page));
         ext.setPage(page);
         ext.setResCount(Pair.create(cardList.size(), drawList.size()));
-        ext.setResBack(bTof(back_resource, "back"));
-
+        if (back_resource != null) {
+            ext.setResBack(bTof(back_resource, "back", page));
+        } else {
+            ext.setResBack(null);
+        }
         for (int i = 0; i < drawList.size(); i++) {
             View v = drawList.get(i);
-            ResManager resManager = new ResManager(bTof(drawSubList.get(i), "f" + i), v.getX(), v.getY(), v.getWidth(), v.getHeight());
+            ResManager resManager = new ResManager(bTof(drawSubList.get(i), "f" + i, page), v.getX(), v.getY(), v.getWidth(), v.getHeight());
             ext.addResImg(resManager);
         }
 
@@ -353,11 +367,33 @@ public class CfView extends FrameLayout {
             ext.addResTxt(resManager);
         }
 
-//        try {
-//            ext.log();
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            JSONObject data = new JSONObject();
+            data.put("main_img", ext.getMainImgName());
+            data.put("page", ext.getPage());
+            data.put("res_count", ext.getResCount());
+            data.put("res_back", ext.getResBackName() != null ? ext.getResBackName() : JSONObject.NULL);
+
+            JSONArray resImg = new JSONArray();
+            for (int i = 0; i < ext.getImageSize(); i++) {
+                resImg.put(ext.getImageData(i));
+            }
+            data.put("res_img", resImg);
+
+            JSONArray resTxt = new JSONArray();
+            for (int i = 0; i < ext.getTextSize(); i++) {
+                resTxt.put(ext.getTextData(i));
+            }
+            data.put("res_txt", resTxt);
+
+            Log.e(TAG, "createIndiFormat: " + data.toString());
+            try (PrintWriter out = new PrintWriter(cv.getExternalCacheDir() + "/" + page + "/data.json", "UTF-8")) {
+                out.write(data.toString());
+            }
+        } catch (JSONException | IOException e) {
+            e.printStackTrace();
+        }
+
 
         return ext;
     }
@@ -402,12 +438,11 @@ public class CfView extends FrameLayout {
 
     }
 
-    public File bTof(Bitmap b, String s) {
-        File f = new File(cv.getExternalCacheDir() + "/" + s);
+    public File bTof(Bitmap b, String s, int i) {
+        File f = new File(cv.getExternalCacheDir() + "/" + i + "/" + s);
         OutputStream out = null;
         try {
             boolean flag = f.createNewFile();
-            Log.e(TAG, "flag?: " + flag);
             out = new FileOutputStream(f);
             b.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.close();
@@ -441,4 +476,6 @@ public class CfView extends FrameLayout {
 
         return false;
     }
+
+
 }

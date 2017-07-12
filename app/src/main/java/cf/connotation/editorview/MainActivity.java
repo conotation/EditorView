@@ -3,6 +3,7 @@ package cf.connotation.editorview;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -52,6 +53,11 @@ import cf.connotation.editorview.databinding.StudioLastFooterBinding;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
+/**
+ * - MainActivity
+ * - 에디터
+ */
+
 public class MainActivity extends BaseActivity {
     protected ActivityMainBinding binding;
     protected CfView cfv;
@@ -68,6 +74,7 @@ public class MainActivity extends BaseActivity {
     private final int EDITING_VIEW = 1;
 
     private boolean drawFlag = false;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -424,19 +431,6 @@ public class MainActivity extends BaseActivity {
         }
     }
 
-
-    private int DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
-        float _x = cfv.pos1.first - cfv.pos2.first;
-        float _y = cfv.pos1.second - cfv.pos2.second;
-        double _1 = Math.sqrt(_x + _y);
-        float x = p1.first - p2.first;
-        float y = p2.second - p2.second;
-        double _2 = Math.sqrt(x * x + y * y);
-
-        return _1 < _2 ? 1 : 0;
-    }
-
-
     private void startCropActivity(@NonNull Uri uri) {
         String destinationFileName = "0x10x20x30x4.png";    // 의미없음
         if (drawFlag) {
@@ -497,6 +491,32 @@ public class MainActivity extends BaseActivity {
         adapter.notifyDataSetChanged();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        try {
+            File dir = getApplicationContext().getExternalCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i = 0; i < children.length; i++) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+            }
+        }
+
+        return dir.delete();
+    }
 
 }
 

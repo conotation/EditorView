@@ -6,3 +6,8 @@ package cf.connotation.editorview;
 
 public class FooterView {
 }
+
+/**
+ * 별 의미는 없는 구분자 class
+ * - 없으면 에러남
+ */

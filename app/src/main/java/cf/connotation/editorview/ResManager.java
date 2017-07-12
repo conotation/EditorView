@@ -4,6 +4,7 @@ import java.io.File;
 
 /**
  * Created by Conota on 2017-07-04.
+ * - 카드 및 리소스 정보 관리자
  */
 
 public class ResManager {
@@ -17,23 +18,25 @@ public class ResManager {
     private int size;           // txt
     private String font;        // txt
     private String color;       // txt
-    private boolean _img = false;
+    private boolean _img = false;       // 이미지 체크 여부
 
     public ResManager(File img, float x, float y, int width, int height) {  // 이미지
         this.img = img;
-        this.x = x;
-        this.y = y;
+        this.img_name = img.getName();
+        this.x = (float) Math.floor(x);
+        this.y = (float) Math.floor(y);
         this.width = width;
         this.height = height;
-        _img = true;
+        this._img = true;
     }
 
     public ResManager(String img, float x, float y, int width, int height) { // 이미지
         this.img_name = img;
-        this.x = x;
-        this.y = y;
+        this.x = (float) Math.floor(x);
+        this.y = (float) Math.floor(y);
         this.width = width;
         this.height = height;
+        this._img = true;
     }
 
     public ResManager(String txt, float x, float y, int size, String font, String color) {
@@ -50,7 +53,7 @@ public class ResManager {
     }
 
     public String getImgName() {
-        return img.getAbsolutePath();
+        return img_name;
     }
 
     public String getTxt() {
@@ -85,17 +88,8 @@ public class ResManager {
         return color;
     }
 
-    public String getImgData() {
-        String result = " [ \"" + getImgName() + "\"" +
-                ", " + getX() + ", " + getY() +
-                ", " + getWidth() + ", " + getHeight() + " ] ";
-        return result;
+    public boolean isImg() {
+        return _img;
     }
 
-    public String getTxtData() {
-        String result = " [ \"" + getTxt() + "\"" +
-                ", " + getX() + ", " + getY() +
-                ", " + getSize() + ", " + getFont() + ", " + getColor() + " ] ";
-        return result;
-    }
 }

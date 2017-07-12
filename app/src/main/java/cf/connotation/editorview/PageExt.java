@@ -1,6 +1,5 @@
 package cf.connotation.editorview;
 
-import android.util.Log;
 import android.util.Pair;
 
 import org.json.JSONArray;
@@ -12,6 +11,7 @@ import java.util.ArrayList;
 
 /**
  * Created by Conota on 2017-07-04.
+ * - 단일 페이지 통합 관리자
  */
 
 public class PageExt {
@@ -111,13 +111,20 @@ public class PageExt {
         res_txt.add(res);
     }
 
-
     public File getMainImg() {
         return main_img;
     }
 
     public String getMainImgName() {
-        return main_img.getAbsolutePath();
+        return main_img.getName();
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public JSONArray getResCount() {
+        return new JSONArray().put(res_count.first).put(res_count.second);
     }
 
     public File getResBack() {
@@ -125,7 +132,7 @@ public class PageExt {
     }
 
     public String getResBackName() {
-        return res_back.getAbsolutePath();
+        return res_back!=null ? res_back.getName() : null;
     }
 
     public ResManager getResImg(int i) {
@@ -136,58 +143,45 @@ public class PageExt {
         return res_txt.get(i);
     }
 
-    public void log() throws JSONException {
-        /*String result = "{" +
-                "\"main_img\": " + getMainImgName() +
-                ", \"page\": " + page +
-                ", \"res_count\": [" + res_count.first + ", " + res_count.second +
-                "], \"res_back\": " + getResBackName() +
-                ", \"res_img\": [";*/
-
-        JSONObject d = new JSONObject();
-        d.put("main_img", getMainImgName());
-        d.put("page", page);
-//        d.put("res_count", )
-        JSONArray i1 = new JSONArray();
-        i1.put(res_count.first);
-        i1.put(res_count.second);
-        d.put("res_count", i1);
-        d.put("res_back", getResBackName());
-
-        JSONArray eimg = new JSONArray();
-
-        for (ResManager r : res_img) {
-            JSONArray ja = new JSONArray();
-            ja.put(r.getImgName());
-            ja.put(r.getX());
-            ja.put(r.getY());
-            ja.put(r.getWidth());
-            ja.put(r.getHeight());
-            eimg.put(ja);
-//            result = result + r.getImgData() + ", ";
+    public JSONArray getImageData(int i) {
+        ResManager res = res_img.get(i);
+        try {
+            JSONArray array = new JSONArray();
+            array.put(res.getImgName());
+            array.put(res.getX());
+            array.put(res.getY());
+            array.put(res.getWidth());
+            array.put(res.getHeight());
+            return array;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        d.put("res_img", eimg);
+        return null;
+    }
 
-        JSONArray etxt = new JSONArray();
+    public int getImageSize() {
+        return res_img.size();
+    }
 
-//        result = result + "], \"res_txt\": [";
-
-        for (ResManager r : res_txt) {
-            JSONArray ja = new JSONArray();
-            ja.put(r.getTxt());
-            ja.put(r.getX());
-            ja.put(r.getY());
-            ja.put(r.getSize());
-            ja.put(r.getFont());
-            ja.put(r.getColor());
-//            result = result + r.getTxtData() + ", ";
+    public JSONArray getTextData(int i) {
+        ResManager res = res_txt.get(i);
+        try {
+            JSONArray array = new JSONArray();
+            array.put(res.getTxt());
+            array.put(res.getX());
+            array.put(res.getY());
+            array.put(res.getSize());
+            array.put(res.getFont());
+            array.put(res.getColor());
+            return array;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        d.put("res_txt", etxt);
+        return null;
+    }
 
-
-//        result = result + "] }";
-
-        Log.e("PageExt", d.toString());
+    public int getTextSize() {
+        return res_txt.size();
     }
 
 

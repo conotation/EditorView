@@ -7,6 +7,8 @@ import android.util.AttributeSet;
 
 /**
  * Created by Connotation on 2017-06-05.
+ *
+ * 텍스트가 포함되있는 카드 레이아웃
  */
 
 public class InText extends android.support.v7.widget.AppCompatTextView {
