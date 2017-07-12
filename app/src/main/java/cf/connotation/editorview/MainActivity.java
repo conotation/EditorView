@@ -291,7 +291,7 @@ public class MainActivity extends BaseActivity {
                                         p.setSeleceted(false);
                                     }
                                 }
-git  add.                                cfv.movePage(holder.getBinding().getPosition() + 1);        // X 페이지로 이동
+                                cfv.movePage(holder.getBinding().getPosition() + 1);        // X 페이지로 이동
                                 holder.getBinding().getContent().setSeleceted(true);
                                 ((Page) cfv.getPag().arr.get(holder.getBinding().getPosition())).setSeleceted(true);
                                 adapter.notifyDataSetChanged();
