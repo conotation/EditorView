@@ -8,9 +8,9 @@ import java.io.File;
  */
 
 public class ResManager {
-    private File img;        // img
+    private File img;        // 최종 이미지
     private String img_name;
-    private String txt;          // txt
+    private String txt;          // 최종 텍스트
     private float x;
     private float y;
     private int width;          // img

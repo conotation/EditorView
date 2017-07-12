@@ -36,8 +36,7 @@ public class PageManager {
     }
 
     public Page returnPage(int i) {
-        Page p = (Page) arr.get(i - 1);
-        return p;  // 1페이지부터 시작
+        return (Page) arr.get(i - 1);  // 1페이지부터 시작
     }
 
 }

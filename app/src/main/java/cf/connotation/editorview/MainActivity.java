@@ -68,7 +68,7 @@ public class MainActivity extends BaseActivity {
     private final int REQUEST_SELECT_PICTURE = 0x01;
     protected int NOW_EDITING = 1;
     private boolean _dialog = false;
-    private String _current_color = "#000000";
+    private String _current_color = "#ffffff";
 
     private final int EDITING_TEXT = 0;
     private final int EDITING_VIEW = 1;
@@ -188,7 +188,7 @@ public class MainActivity extends BaseActivity {
                 else if (cv == 0)
                     Toast.makeText(MainActivity.this, "텍스트의 색을 바꾸는 기능입니다", Toast.LENGTH_SHORT).show();
                 else {
-                    cfv.changeColor(_current_color);   // TODO 파레트 추가 (!)
+                    cfv.changeColor(_current_color);
                 }
             }
         });

@@ -28,7 +28,8 @@ public class PageExt {
 
     }
 
-    public PageExt(String s) {  // get JSON
+    public PageExt(String s) {
+        // TODO JSON을 이용해 역으로 구축
         try {
             JSONObject data = new JSONObject(s);
             this.main_img_name = data.getString("main_img");
@@ -81,10 +82,12 @@ public class PageExt {
      *             "res_back": "rsss.png",	// Background Resource
      *             "res_img": [
      *             ["img1", "x", "y", "width", "height"],
-     *             ["img2", "x", "y", "width", "height"],
+     *             ["img2", "x", "y", "width", "height"]
      *             ],
      *             "res_txt": [ ]
-     *             },
+     *             }
+     *
+     *             Page JSON 구조
      */
 
     void setPage(int page) {
@@ -132,7 +135,7 @@ public class PageExt {
     }
 
     public String getResBackName() {
-        return res_back!=null ? res_back.getName() : null;
+        return res_back != null ? res_back.getName() : null;
     }
 
     public ResManager getResImg(int i) {

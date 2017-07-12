@@ -18,8 +18,6 @@ public class InText extends android.support.v7.widget.AppCompatTextView {
 
     public InText(Context context) {
         super(context);
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
-//                LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
     }
 
     public void setTypeface(Typeface tf, String s) {

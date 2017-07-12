@@ -239,7 +239,7 @@ public class CfView extends FrameLayout {
             return;
         }
         for (int i = 0; i < cardList.size(); i++) {
-            if (currentView.getId() == ((View) cardList.get(i)).getId()) {
+            if (currentView.getId() == (cardList.get(i)).getId()) {
                 removeView(currentView);
                 setFlag(false);
                 cardList.remove(i);
@@ -287,12 +287,11 @@ public class CfView extends FrameLayout {
     }
 
     public void changeColor(String tmp) {
-        final hexColor h = new hexColor();
-        h.setColor(tmp);
-        ColorPickerDialogBuilder
+        final hexColor h = new hexColor(tmp);
+        ColorPickerDialogBuilder        // 컬러피커 라이브러리 * 맘에 안듬
                 .with(cv)
                 .setTitle("색 선택")
-                .initialColor(Color.parseColor(h.getColor()))
+                .initialColor(h.getargbColor())
                 .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)
                 .lightnessSliderOnly()
                 .density(12)
@@ -319,6 +318,7 @@ public class CfView extends FrameLayout {
 
     public void movePage(int x) {       // position
         // TODO 페이지 이동 구현
+        // TODO v2 재구축 필요
         setFlag(false);
         pag.modPagePM(new Page(cardList, drawList, drawSubList, back_resource, page, createIndiFormat()));
         Log.e(TAG, "movePage: " + getChildCount());
@@ -411,9 +411,13 @@ public class CfView extends FrameLayout {
 
     private class hexColor {
         private String s;
+        private long A = 0xff;
+        private long R = 0xff;
+        private long G = 0xff;
+        private long B = 0xff;
 
-        hexColor() {
-
+        public hexColor(String s) {
+            setColor(s);
         }
 
         public void setColor(int i1, int i2, int i3) {
@@ -425,10 +429,22 @@ public class CfView extends FrameLayout {
         public void setColor(String s) {
             if (s.length() == 8) {
                 this.s = s.substring(2);
+                A = Long.parseLong(s.substring(0, 2), 16);
+                R = Long.parseLong(s.substring(2, 4), 16);
+                G = Long.parseLong(s.substring(4, 6), 16);
+                B = Long.parseLong(s.substring(6, 8), 16);
             } else if (s.length() == 7) {
                 this.s = s.substring(1);
+                A = 255;
+                R = Long.parseLong(s.substring(1, 3), 16);
+                G = Long.parseLong(s.substring(3, 5), 16);
+                B = Long.parseLong(s.substring(5, 7), 16);
             } else {
                 this.s = s;
+                A = 0xff;
+                R = Long.parseLong(s.substring(0, 2), 16);
+                G = Long.parseLong(s.substring(2, 4), 16);
+                B = Long.parseLong(s.substring(4, 6), 16);
             }
         }
 
@@ -436,13 +452,17 @@ public class CfView extends FrameLayout {
             return "#" + s;
         }
 
+        public int getargbColor() {
+            return Color.argb((int) A, (int) R, (int) G, (int) B);
+        }
+
     }
 
-    public File bTof(Bitmap b, String s, int i) {
+    public File bTof(Bitmap b, String s, int i) {   // Bitmap to File
         File f = new File(cv.getExternalCacheDir() + "/" + i + "/" + s);
         OutputStream out = null;
         try {
-            boolean flag = f.createNewFile();
+            f.createNewFile();
             out = new FileOutputStream(f);
             b.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.close();
@@ -457,6 +477,7 @@ public class CfView extends FrameLayout {
     }
 
     public boolean restorePage() {
+        // TODO 페이지 복원 구현 필요
         for (int i = 0; i < cardList.size(); i++) {
 //            ResManager res = pageExt.getResTxt(i);
             InText it = (InText) cardList.get(i);

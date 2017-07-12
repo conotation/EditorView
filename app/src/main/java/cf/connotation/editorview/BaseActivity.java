@@ -9,6 +9,8 @@ import android.support.v7.app.AppCompatActivity;
 
 /**
  * Created by Oleksii Shliama (https://github.com/shliama).
+ * <p>
+ * thx Oleksii Shliama
  */
 public class BaseActivity extends AppCompatActivity {
 
@@ -16,9 +18,6 @@ public class BaseActivity extends AppCompatActivity {
 
     private AlertDialog mAlertDialog;
 
-    /**
-     * Hide alert dialog if any.
-     */
     @Override
     protected void onStop() {
         super.onStop();
@@ -27,11 +26,6 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Requests given permission.
-     * If the permission has been denied previously, a Dialog will prompt the user to grant the
-     * permission, otherwise it is requested directly.
-     */
     protected void requestPermission(final String permission, String rationale, final int requestCode) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
             showAlertDialog(getString(R.string.permission_title_rationale), rationale,
@@ -47,17 +41,6 @@ public class BaseActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * This method shows dialog with given title & message.
-     * Also there is an option to pass onClickListener for positive & negative button.
-     *
-     * @param title                         - dialog title
-     * @param message                       - dialog message
-     * @param onPositiveButtonClickListener - listener for positive button
-     * @param positiveText                  - positive button text
-     * @param onNegativeButtonClickListener - listener for negative button
-     * @param negativeText                  - negative button text
-     */
     protected void showAlertDialog(@Nullable String title, @Nullable String message,
                                    @Nullable DialogInterface.OnClickListener onPositiveButtonClickListener,
                                    @NonNull String positiveText,
@@ -70,5 +53,4 @@ public class BaseActivity extends AppCompatActivity {
         builder.setNegativeButton(negativeText, onNegativeButtonClickListener);
         mAlertDialog = builder.show();
     }
-
 }
