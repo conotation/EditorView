@@ -291,7 +291,7 @@ public class MainActivity extends BaseActivity {
                                         p.setSeleceted(false);
                                     }
                                 }
-                                cfv.movePage(holder.getBinding().getPosition() + 1);        // X 페이지로 이동
+git  add.                                cfv.movePage(holder.getBinding().getPosition() + 1);        // X 페이지로 이동
                                 holder.getBinding().getContent().setSeleceted(true);
                                 ((Page) cfv.getPag().arr.get(holder.getBinding().getPosition())).setSeleceted(true);
                                 adapter.notifyDataSetChanged();
@@ -360,9 +360,11 @@ public class MainActivity extends BaseActivity {
                     e.printStackTrace();
                 }
             }
-        }
-        if (resultCode == UCrop.RESULT_ERROR) {
-            Toast.makeText(this, "에러 발생", Toast.LENGTH_SHORT).show();
+        } else {
+            drawFlag = false;
+            if (resultCode == UCrop.RESULT_ERROR) {
+                Toast.makeText(this, "에러 발생", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

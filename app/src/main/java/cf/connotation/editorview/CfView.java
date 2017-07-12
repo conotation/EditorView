@@ -14,6 +14,7 @@ import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,6 +41,7 @@ public class CfView extends FrameLayout {
     private ArrayList<View> drawList = new ArrayList<>();     // Image
     private ArrayList<Bitmap> drawSubList = new ArrayList<>();     // Image Bitmap
     private int page = 1;
+    private PageExt pageExt = new PageExt();
     public int count_page = 0;
     public static final int NONE = 0;
     public static final int MOVE = 1;
@@ -311,9 +313,13 @@ public class CfView extends FrameLayout {
     public void movePage(int x) {       // position
         // TODO 페이지 이동 구현
         setFlag(false);
-        pag.modPagePM(new Page(cardList, drawList, drawSubList, back_resource, page, true));
-        removeAllViews();
-        LinearLayout llayout = new LinearLayout(cv);        // TODO 다시 그리기
+        pag.modPagePM(new Page(cardList, drawList, drawSubList, back_resource, page, createIndiFormat()));
+        Log.e(TAG, "movePage: " + getChildCount());
+        for (int i = 1; i < getChildCount(); i++) {
+            removeViewAt(i);
+        }
+        Log.e(TAG, "movePage: " + getChildCount());
+        ImageView llayout = new ImageView(cv);        // TODO 다시 그리기
         llayout.setId(R.id.tfv);
         llayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         llayout.setBackgroundColor(Color.WHITE);
@@ -324,10 +330,11 @@ public class CfView extends FrameLayout {
         drawSubList = p.getBitmap();
         back_resource = p.getBack();
         page = p.getViewPage();
-
+        pageExt = p.getPageExt();
+        restorePage();
     }
 
-    public void createIndiFormat() {
+    public PageExt createIndiFormat() {
         PageExt ext = new PageExt();
         ext.setMainImg(bTof(currentShow, "show"));
         ext.setPage(page);
@@ -351,6 +358,8 @@ public class CfView extends FrameLayout {
 //        } catch (JSONException e) {
 //            e.printStackTrace();
 //        }
+
+        return ext;
     }
 
     private boolean DistantFar(Pair<Float, Float> p1, Pair<Float, Float> p2) {
@@ -413,6 +422,21 @@ public class CfView extends FrameLayout {
     }
 
     public boolean restorePage() {
+        for (int i = 0; i < cardList.size(); i++) {
+//            ResManager res = pageExt.getResTxt(i);
+            InText it = (InText) cardList.get(i);
+            ((ViewManager) it.getParent()).removeView(it);
+
+            addCard(it, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
+        for (int i = 0; i < drawList.size(); i++) {
+            LinearLayout draw = (LinearLayout) drawList.get(i);
+            ((ViewManager) draw.getParent()).removeView(draw);
+
+            addDrawCard(draw, null, drawSubList.get(i));
+        }
+
+        ((ImageView) findViewById(R.id.tfv)).setImageBitmap(back_resource);
 
 
         return false;

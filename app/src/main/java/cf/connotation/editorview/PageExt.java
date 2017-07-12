@@ -111,6 +111,7 @@ public class PageExt {
         res_txt.add(res);
     }
 
+
     public File getMainImg() {
         return main_img;
     }
@@ -127,6 +128,13 @@ public class PageExt {
         return res_back.getAbsolutePath();
     }
 
+    public ResManager getResImg(int i) {
+        return res_img.get(i);
+    }
+
+    public ResManager getResTxt(int i) {
+        return res_txt.get(i);
+    }
 
     public void log() throws JSONException {
         /*String result = "{" +

@@ -2,8 +2,11 @@ package cf.connotation.editorview;
 
 import android.databinding.ObservableBoolean;
 import android.graphics.Bitmap;
+import android.util.Log;
 
 import java.util.ArrayList;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Conota on 2017-06-27.
@@ -15,9 +18,8 @@ public class Page {
     private ArrayList bitmap;
     private Bitmap back;
     private int viewPage;   // NOT Page Class
-    private boolean createFlag = true;
-
     private ObservableBoolean seleceted = new ObservableBoolean();
+    private PageExt pageExt = new PageExt();
 
     public Page(ArrayList card, ArrayList draw, ArrayList bitmap, Bitmap b, int viewPage) {
         this.card = card;
@@ -25,17 +27,17 @@ public class Page {
         this.bitmap = bitmap;
         this.back = b;
         if (viewPage == 1) seleceted.set(true);
-        this.createFlag = false;
         this.viewPage = viewPage;
     }
 
-    public Page(ArrayList card, ArrayList draw, ArrayList bitmap, Bitmap b, int viewPage, boolean createFlag) {
+    public Page(ArrayList card, ArrayList draw, ArrayList bitmap, Bitmap b, int viewPage, PageExt pageExt) {
+        Log.e(TAG, "Page: " + viewPage + " modify" );
         this.card = card;
         this.draw = draw;
         this.bitmap = bitmap;
         this.back = b;
-        this.createFlag = createFlag;
         this.viewPage = viewPage;
+        this.pageExt = pageExt;
     }
 
     public ArrayList getBitmap() {
@@ -64,5 +66,9 @@ public class Page {
 
     public boolean isSeleceted() {
         return this.seleceted.get();
+    }
+
+    public PageExt getPageExt() {
+        return pageExt;
     }
 }
