@@ -499,7 +499,6 @@ public class CfView extends FrameLayout {
 
             JSONObject data = new JSONObject(json);
 
-
             File rmain = new File((String) data.get("main_img"));
             p.setMainImg(rmain);
             int rpage = (int) data.get("page");
@@ -534,7 +533,7 @@ public class CfView extends FrameLayout {
                     txt_pack.add(res);
                 }
             }
-            p.setResImg(txt_pack);
+            p.setResTxt(txt_pack);
 
         } catch (IOException | JSONException e) {
             e.printStackTrace();
@@ -545,7 +544,8 @@ public class CfView extends FrameLayout {
         drawList.clear();
         drawSubList.clear();
 
-        page = p.getPage();
+//        page = p.getPage();
+        page = 1;
         if (p.getResBack() != null) {
             back_resource = fTob("/" + page + "/" + p.getResBackName());
             setCardBackground(back_resource);
@@ -599,6 +599,7 @@ public class CfView extends FrameLayout {
             tv.setText(res.getTxt());
             tv.setTextSize(res.getSize());
             tv.setTypeface(FontBinder.get(res.getFont()), "NanumGothic");
+            tv.setTextColor(Color.parseColor(res.getColor()));
             tv = ((MainActivity) cv).setListener(tv);
             addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
