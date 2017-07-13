@@ -565,8 +565,8 @@ public class CfView extends FrameLayout {
             Bitmap b = fTob("/" + page + "/" + res.getImgName());
             BitmapDrawable bm = new BitmapDrawable(getResources(), b);
             ll.setBackground(bm);
-            ll.setX(res.getY() + res.getWidth() / 2);
-            ll.setY(res.getX() + res.getHeight() / 2);
+            ll.setX(res.getX());
+            ll.setY(res.getY());
             ll.setLayoutParams(new LinearLayoutCompat.LayoutParams(res.getWidth(), res.getHeight()));
             ll.setOnTouchListener(new View.OnTouchListener() {
                 @Override

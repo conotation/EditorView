@@ -30,16 +30,6 @@ public class ResManager {
         this._img = true;
     }
 
-    public ResManager(File img, float x, float y, int width, int height, boolean b) { // 이미지
-        this.img = img;
-        this.img_name = img.getName();
-        this.x = (float) Math.floor(x);
-        this.y = (float) Math.floor(y);
-        this.width = width;
-        this.height = height;
-        this._img = true;
-    }
-
     public ResManager(String txt, float x, float y, int size, String font, String color) {
         this.txt = txt;
         this.x = x;
