@@ -342,10 +342,7 @@ public class MainActivity extends BaseActivity {
     @Override
     public void onBackPressed() {
         if (NOW_EDITING == EDITING_TEXT) {
-            binding.editorHigh.setVisibility(GONE);
-            binding.editorLow.setVisibility(VISIBLE);
-            _dialog = false;
-            NOW_EDITING = EDITING_VIEW;
+            changeForm();
         } else {
             showAlertDialog(getString(R.string.app_name), getString(R.string.close_text),
                     new DialogInterface.OnClickListener() {
@@ -354,6 +351,15 @@ public class MainActivity extends BaseActivity {
                             MainActivity.super.onBackPressed();
                         }
                     }, getString(R.string.label_ok), null, getString(R.string.label_cancel));
+        }
+    }
+
+    public void changeForm() {
+        if (NOW_EDITING == EDITING_TEXT) {
+            binding.editorHigh.setVisibility(GONE);
+            binding.editorLow.setVisibility(VISIBLE);
+            _dialog = false;
+            NOW_EDITING = EDITING_VIEW;
         }
     }
 
@@ -550,7 +556,7 @@ public class MainActivity extends BaseActivity {
         return dir.delete();
     }
 
-    public InText setListener(final InText tv){
+    public InText setListener(final InText tv) {
         tv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
