@@ -3,18 +3,20 @@ package cf.connotation.editorview;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.Pair;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -24,14 +26,18 @@ import android.widget.Toast;
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.builder.ColorPickerClickListener;
 import com.flask.colorpicker.builder.ColorPickerDialogBuilder;
+import com.github.nitrico.fontbinder.FontBinder;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
@@ -156,7 +162,7 @@ public class CfView extends FrameLayout {
                     MODE = MOVE;
                     currentView.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
                     if (currentView instanceof LinearLayout) {
-                        if (event.getX() - 5 < currentView.getX() || event.getX() + 5 > currentView.getX() + currentView.getMeasuredWidth() || event.getY() - 5 < currentView.getY() || event.getY() > currentView.getY() + currentView.getHeight() + 5) {
+                        if (event.getX() - 5 < currentView.getX() || event.getX() + 5 > currentView.getX() + currentView.getWidth() || event.getY() - 5 < currentView.getY() || event.getY() + 5 > currentView.getY() + currentView.getHeight()) {
                             setFlag(false);
                             return true;
                         }
@@ -325,12 +331,13 @@ public class CfView extends FrameLayout {
         for (int i = 1; i < getChildCount(); i++) {
             removeViewAt(i);
         }
+        getChildAt(0).setBackgroundColor(Color.WHITE);
         Log.e(TAG, "movePage: " + getChildCount());
-        ImageView llayout = new ImageView(cv);        // TODO 다시 그리기
-        llayout.setId(R.id.tfv);
-        llayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        llayout.setBackgroundColor(Color.WHITE);
-        addView(llayout);
+//        ImageView llayout = new ImageView(cv);        // TODO 다시 그리기
+//        llayout.setId(R.id.tfv);
+//        llayout.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+//        llayout.setBackgroundColor(Color.WHITE);
+//        addView(llayout);
         Page p = pag.returnPage(x);
         cardList = p.getCard();
         drawList = p.getDraw();
@@ -338,7 +345,7 @@ public class CfView extends FrameLayout {
         back_resource = p.getBack();
         page = p.getViewPage();
         pageExt = p.getPageExt();
-        restorePage();
+        Toast.makeText(cv, "" + (restorePage() ? "완료" : "실패"), Toast.LENGTH_SHORT).show();
     }
 
     public PageExt createIndiFormat() {
@@ -472,30 +479,132 @@ public class CfView extends FrameLayout {
         return f;
     }
 
+    public Bitmap fTob(String s) {
+        return BitmapFactory.decodeFile(cv.getExternalCacheDir() + s);
+    }
+
     public PageManager getPag() {
         return pag;
     }
 
     public boolean restorePage() {
         // TODO 페이지 복원 구현 필요
-        for (int i = 0; i < cardList.size(); i++) {
-//            ResManager res = pageExt.getResTxt(i);
-            InText it = (InText) cardList.get(i);
-            ((ViewManager) it.getParent()).removeView(it);
 
-            addCard(it, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        PageExt p = new PageExt();
+
+        try {
+            File f = new File(cv.getExternalCacheDir() + "/1/data.json");
+            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
+            String json = br.readLine();
+
+            JSONObject data = new JSONObject(json);
+
+
+            File rmain = new File((String) data.get("main_img"));
+            p.setMainImg(rmain);
+            int rpage = (int) data.get("page");
+            p.setPage(rpage);
+            JSONArray rcount = data.getJSONArray("res_count");
+            p.setResCount(Pair.create(rcount.getInt(0), rcount.getInt(1)));
+
+            File rback = null;
+            if (!data.isNull("res_back")) {
+                rback = new File((String) data.get("res_back"));
+            }
+            p.setResBack(rback);
+
+            ArrayList<ResManager> img_pack = new ArrayList<>();
+            if (!data.isNull("res_img")) {
+                JSONArray imgData = data.getJSONArray("res_img");
+                for (int i = 0; i < imgData.length(); i++) {
+                    JSONArray img = imgData.getJSONArray(i);
+                    ResManager res = new ResManager(new File(img.getString(0)), (float) img.getDouble(1), (float) img.getDouble(2), img.getInt(3), img.getInt(4));
+                    img_pack.add(res);
+                }
+            }
+            p.setResImg(img_pack);
+
+
+            ArrayList<ResManager> txt_pack = new ArrayList<>();
+            if (!data.isNull("res_txt")) {
+                JSONArray txtData = data.getJSONArray("res_txt");
+                for (int i = 0; i < txtData.length(); i++) {
+                    JSONArray txt = txtData.getJSONArray(i);
+                    ResManager res = new ResManager(txt.getString(0), (float) txt.getDouble(1), (float) txt.getDouble(2), txt.getInt(3), txt.getString(4), txt.getString(5));
+                    txt_pack.add(res);
+                }
+            }
+            p.setResImg(txt_pack);
+
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+            return false;
         }
-        for (int i = 0; i < drawList.size(); i++) {
-            LinearLayout draw = (LinearLayout) drawList.get(i);
-            ((ViewManager) draw.getParent()).removeView(draw);
 
-            addDrawCard(draw, null, drawSubList.get(i));
+        cardList.clear();   // Re: Zero
+        drawList.clear();
+        drawSubList.clear();
+
+        page = p.getPage();
+        if (p.getResBack() != null) {
+            back_resource = fTob("/" + page + "/" + p.getResBackName());
+            setCardBackground(back_resource);
         }
 
-        ((ImageView) findViewById(R.id.tfv)).setImageBitmap(back_resource);
+        ArrayList<ResManager> drawTemp = p.getResImg();
+        for (int i = 0; i < drawTemp.size(); i++) {
+            ResManager res = drawTemp.get(i);
+            final LinearLayout ll = new LinearLayout(cv);
+            Bitmap b = fTob("/" + page + "/" + res.getImgName());
+            BitmapDrawable bm = new BitmapDrawable(getResources(), b);
+            ll.setBackground(bm);
+
+            ll.setX(res.getY());
+            ll.setY(res.getX());
+            ll.setLayoutParams(new LinearLayoutCompat.LayoutParams(res.getWidth(), res.getHeight()));
+            ll.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (getLocked())
+                        return false;
+                    switch (event.getAction() & MotionEvent.ACTION_MASK) {
+                        case MotionEvent.ACTION_UP:
+                            MODE = CfView.NONE;
+                            setFlag(false);
+                            break;
+                        case MotionEvent.ACTION_POINTER_DOWN:
+                            setFlag(true, ll);
+                            MODE = CfView.ZOOM;
+                            onTouchEvent(event);
+                            break;
+                        case MotionEvent.ACTION_DOWN:
+                        case MotionEvent.ACTION_MOVE:
+                            if (event.getPointerCount() > 1) {
+                                MODE = CfView.ZOOM;
+                            }
+                            MODE = CfView.MOVE;
+                            setFlag(true, ll);
+                            break;
+                    }
+                    return true;
+                }
+            });
+            addDrawCard(ll, null, fTob("/" + page + "/" + res.getImgName()));
+        }
+
+        ArrayList<ResManager> cardTemp = p.getResTxt();
+        for (int i = 0; i < cardTemp.size(); i++) {
+            ResManager res = cardTemp.get(i);
+            InText tv = new InText(cv);
+            tv.setText(res.getTxt());
+            tv.setTextSize(res.getSize());
+            tv.setTypeface(FontBinder.get(res.getFont()), "NanumGothic");
+            tv = ((MainActivity) cv).setListener(tv);
+            addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        }
 
 
-        return false;
+        return true;
     }
 
 

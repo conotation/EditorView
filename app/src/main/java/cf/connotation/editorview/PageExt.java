@@ -3,8 +3,6 @@ package cf.connotation.editorview;
 import android.util.Pair;
 
 import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ public class PageExt {
     private String main_img_name;
     private int page;
     private Pair<Integer, Integer> res_count;
-    private File res_back;
+    private File res_back = null;
     private String res_back_name;
     private ArrayList<ResManager> res_img = new ArrayList<>();
     private ArrayList<ResManager> res_txt = new ArrayList<>();
@@ -29,49 +27,7 @@ public class PageExt {
     }
 
     public PageExt(String s) {
-        // TODO JSON을 이용해 역으로 구축
-        try {
-            JSONObject data = new JSONObject(s);
-            this.main_img_name = data.getString("main_img");
-            this.page = data.getInt("page");
-            JSONArray res_count = data.getJSONArray("res_count");
-            this.res_count = Pair.create(res_count.getInt(0), res_count.getInt(1));
-            this.res_back_name = data.getString("res_back");
-            JSONArray res_img = data.getJSONArray("res_img");
-            if (res_img != null) {
-                for (int i = 0; i < res_img.length(); i++) {
-                    JSONArray json_img = new JSONArray(new JSONObject(res_img.getString(i)));
 
-                    ResManager res = new ResManager(
-                            json_img.get(0).toString(),
-                            Float.parseFloat(json_img.get(1).toString()),
-                            Float.parseFloat(json_img.get(2).toString()),
-                            Integer.parseInt(json_img.get(3).toString()),
-                            Integer.parseInt(json_img.get(4).toString())
-                    );
-                    this.res_img.add(res);
-                }
-            }
-            JSONArray res_txt = data.getJSONArray("res_txt");
-            if (res_txt != null) {
-                for (int i = 0; i < res_txt.length(); i++) {
-                    JSONArray json_img = new JSONArray(new JSONObject(res_txt.getString(i)));
-
-                    ResManager res = new ResManager(
-                            json_img.get(0).toString(),
-                            Float.parseFloat(json_img.get(1).toString()),
-                            Float.parseFloat(json_img.get(2).toString()),
-                            Integer.parseInt(json_img.get(3).toString()),
-                            json_img.get(4).toString(),
-                            json_img.get(5).toString()
-                    );
-                    this.res_img.add(res);
-                }
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -86,7 +42,7 @@ public class PageExt {
      *             ],
      *             "res_txt": [ ]
      *             }
-     *
+     *             <p>
      *             Page JSON 구조
      */
 
@@ -100,10 +56,22 @@ public class PageExt {
 
     void setMainImg(File img) {
         this.main_img = img;
+        this.main_img_name = img.getName();
     }
 
     void setResBack(File img) {
+        if (img == null)
+            return;
         this.res_back = img;
+        this.res_back_name = img.getName();
+    }
+
+    public void setResImg(ArrayList<ResManager> res) {
+        this.res_img = res;
+    }
+
+    public void setResTxt(ArrayList<ResManager> res) {
+        this.res_txt = res;
     }
 
     void addResImg(ResManager res) {
@@ -138,6 +106,14 @@ public class PageExt {
         return res_back != null ? res_back.getName() : null;
     }
 
+    public ArrayList<ResManager> getResImg() {
+        return res_img;
+    }
+
+    public ArrayList<ResManager> getResTxt() {
+        return res_txt;
+    }
+
     public ResManager getResImg(int i) {
         return res_img.get(i);
     }
@@ -148,18 +124,13 @@ public class PageExt {
 
     public JSONArray getImageData(int i) {
         ResManager res = res_img.get(i);
-        try {
-            JSONArray array = new JSONArray();
-            array.put(res.getImgName());
-            array.put(res.getX());
-            array.put(res.getY());
-            array.put(res.getWidth());
-            array.put(res.getHeight());
-            return array;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
+        JSONArray array = new JSONArray();
+        array.put(res.getImgName());
+        array.put(Math.round(res.getX()));
+        array.put(Math.round(res.getY()));
+        array.put(res.getWidth());
+        array.put(res.getHeight());
+        return array;
     }
 
     public int getImageSize() {
@@ -168,19 +139,14 @@ public class PageExt {
 
     public JSONArray getTextData(int i) {
         ResManager res = res_txt.get(i);
-        try {
-            JSONArray array = new JSONArray();
-            array.put(res.getTxt());
-            array.put(res.getX());
-            array.put(res.getY());
-            array.put(res.getSize());
-            array.put(res.getFont());
-            array.put(res.getColor());
-            return array;
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return null;
+        JSONArray array = new JSONArray();
+        array.put(res.getTxt());
+        array.put(Math.round(res.getX()));
+        array.put(Math.round(res.getY()));
+        array.put(res.getSize());
+        array.put(res.getFont());
+        array.put(res.getColor());
+        return array;
     }
 
     public int getTextSize() {

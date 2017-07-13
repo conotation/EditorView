@@ -3,7 +3,6 @@ package cf.connotation.editorview;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,7 +20,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.Log;
-import android.util.Pair;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -75,6 +73,10 @@ public class MainActivity extends BaseActivity {
 
     private boolean drawFlag = false;
 
+    private LinearLayout showingView = null;
+
+    private int postFlag = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,11 +87,37 @@ public class MainActivity extends BaseActivity {
         cfv.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                try {
-                    // TODO: 비트맵 하단부 슬라이드에 넣기
-                    cfv.currentShow = getLtoB();
-                } catch (Exception e) {
-                    e.printStackTrace();
+                if (postFlag < 1) {
+                    cfv.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            cfv.currentShow = getLtoB();
+                            BitmapDrawable bm = new BitmapDrawable(getResources(), cfv.currentShow);
+                            if (showingView == null) {
+                                Toast.makeText(MainActivity.this, "에러", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+                            showingView.setBackground(bm);
+                            postFlag = 1;
+
+                            new Thread() {
+                                @Override
+                                public void run() {
+                                    while (!this.isInterrupted()) {
+                                        try {
+                                            sleep(1000);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        Log.e(TAG, "thread: " + postFlag);
+                                        postFlag = postFlag - 1;
+                                        if (postFlag < 1)
+                                            this.interrupt();
+                                    }
+                                }
+                            }.start();
+                        }
+                    });
                 }
             }
         });
@@ -125,7 +153,7 @@ public class MainActivity extends BaseActivity {
 
         binding.btnStudioDone.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v) {   // TODO 완료버튼튼
                 cfv.createIndiFormat();
                 adapter.notifyDataSetChanged();
             }
@@ -285,12 +313,14 @@ public class MainActivity extends BaseActivity {
                         holder.getBinding().setPosition(holder.getLayoutPosition());
                         if (cfv.getPag().arr.size() == 2) {
                             holder.getBinding().getContent().setSeleceted(true);
+                            showingView = holder.getBinding().show;
                         }
                         holder.getBinding().getRoot().setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 if (holder.getBinding().getContent().isSeleceted())
                                     return;
+                                showingView = holder.getBinding().show;
                                 for (int i = 0; i < cfv.getPag().arr.size(); i++) {
                                     Object o = cfv.getPag().arr.get(i);
                                     if (o instanceof Page) {
@@ -307,7 +337,6 @@ public class MainActivity extends BaseActivity {
                     }
                 })
                 .into(binding.cv);
-//        alp.add(cfv.addPage());
     }
 
     @Override
@@ -413,6 +442,9 @@ public class MainActivity extends BaseActivity {
                                 break;
                             case MotionEvent.ACTION_DOWN:
                             case MotionEvent.ACTION_MOVE:
+                                if (event.getPointerCount() > 1) {
+                                    cfv.MODE = CfView.ZOOM;
+                                }
                                 cfv.MODE = CfView.MOVE;
                                 cfv.setFlag(true, layout);
                                 break;
@@ -516,6 +548,31 @@ public class MainActivity extends BaseActivity {
         }
 
         return dir.delete();
+    }
+
+    public InText setListener(final InText tv){
+        tv.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (NOW_EDITING == EDITING_TEXT) {
+                    if (!_dialog)
+                        showXDialog(tv);
+                } else if (cfv.getLocked()) {
+                    return false;
+                }
+
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        cfv.setFlag(true, tv);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        cfv.setFlag(false);
+                        break;
+                }
+                return true;
+            }
+        });
+        return tv;
     }
 
 }
