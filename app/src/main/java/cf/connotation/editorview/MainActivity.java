@@ -318,8 +318,8 @@ public class MainActivity extends BaseActivity {
                         holder.getBinding().btnPageAdd.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if (cfv.getLimitPage() > 9) {
-                                    Toast.makeText(MainActivity.this, "최대 페이지는 10p입니다", Toast.LENGTH_SHORT).show();
+                                if (cfv.getLimitPage() > 4) {
+                                    Toast.makeText(MainActivity.this, "최대 페이지는 5p입니다", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 addPage();
