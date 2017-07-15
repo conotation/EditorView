@@ -275,6 +275,12 @@ public class CfView extends FrameLayout {
         iv.setImageBitmap(b);
     }
 
+    public void setEraseBackground(Bitmap b) {
+        ImageView iv = findViewById(R.id.tfv);
+        back_resource = null;
+        iv.setImageBitmap(b);
+    }
+
     public void addPage() {
         // TODO 페이지 추가
         Page p = new Page(cardList, drawList, drawSubList, back_resource, count_page + 1);
@@ -283,6 +289,10 @@ public class CfView extends FrameLayout {
 
     public int getPage() {
         return page;
+    }
+
+    public int getLimitPage() {
+        return count_page;
     }
 
     public int getCVInstance() {
@@ -331,34 +341,45 @@ public class CfView extends FrameLayout {
         // TODO v2 재구축 필요
         setFlag(false);
         ((MainActivity) cv).changeForm();
-
+        Log.e(TAG, "movePage: " + page );
         pag.modPagePM(new Page(cardList, drawList, drawSubList, back_resource, page, createIndiFormat()));
-        Log.e(TAG, "movePage: " + getChildCount());
-        while (getChildCount() != 1) {
-            removeViewAt(1);
+        if (!killChild()) {
+            Toast.makeText(cv, "버그 발생", Toast.LENGTH_SHORT).show();
+            return;
         }
         if (back_resource != null) {
             Bitmap bitTemp = back_resource.copy(Bitmap.Config.ARGB_8888, true);
             bitTemp.eraseColor(Color.WHITE);
-            setCardBackground(bitTemp);
+            setEraseBackground(bitTemp);
         }
-        Page p = pag.returnPage(x);
-        cardList = p.getCard();
-        drawList = p.getDraw();
-        drawSubList = p.getBitmap();
-        back_resource = p.getBack();
-        page = p.getViewPage();
-        pageExt = p.getPageExt();
-        if (page == 1)
-            Toast.makeText(cv, "" + (restorePage() ? "완료" : "실패"), Toast.LENGTH_SHORT).show();
+        Toast.makeText(cv, "" + (restorePage(x) ? "완료" : "실패"), Toast.LENGTH_SHORT).show();
+        ((MainActivity) cv).fillThread();
+    }
+
+    public boolean killChild() {
+        int tmp = getChildCount();
+        try {
+            while (getChildCount() > 1) {
+                View v = getChildAt(1);
+                removeView(v);
+            }
+        } catch (NullPointerException e) {
+            if (getChildCount() < 2)
+                Log.e(TAG, "killChild: No Child -> " + getChildCount());
+            else
+                Log.e(TAG, "killChild: Error");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        invalidate();
+        Log.e(TAG, "killChild: " + tmp + " ->  " + getChildCount());
+        return true;
     }
 
     public PageExt createIndiFormat() {
         PageExt ext = new PageExt();
-        File folder = new File(cv.getExternalCacheDir() + "/" + page);
-        if (!folder.exists()) {
-            folder.mkdir();
-        }
+
         ext.setMainImg(bTof(currentShow, "show", page));
         ext.setPage(page);
         ext.setResCount(Pair.create(cardList.size(), drawList.size()));
@@ -398,8 +419,13 @@ public class CfView extends FrameLayout {
             }
             data.put("res_txt", resTxt);
 
-            Log.e(TAG, "createIndiFormat: " + data.toString());
-            try (PrintWriter out = new PrintWriter(cv.getExternalCacheDir() + "/" + page + "/data.json", "UTF-8")) {
+            File f = new File(cv.getExternalCacheDir() + "/" + page);
+            if (!f.exists())
+                f.mkdir();
+            String path = cv.getExternalCacheDir() + "/" + page + "/data.json";
+            Log.e(TAG, "createIndiFormat: path: " + path);
+            Log.e(TAG, "createIndiFormat: createJSON:" + data.toString());
+            try (PrintWriter out = new PrintWriter(path, "UTF-8")) {
                 out.write(data.toString());
             }
         } catch (JSONException | IOException e) {
@@ -470,6 +496,10 @@ public class CfView extends FrameLayout {
     }
 
     public File bTof(Bitmap b, String s, int i) {   // Bitmap to File
+        File dir = new File(cv.getExternalCacheDir() + "/" + i);
+        if (!dir.exists())
+            dir.mkdir();
+
         File f = new File(cv.getExternalCacheDir() + "/" + i + "/" + s);
         OutputStream out = null;
         try {
@@ -491,19 +521,23 @@ public class CfView extends FrameLayout {
         return pag;
     }
 
-    public boolean restorePage() {
-        // TODO 페이지 복원 구현 필요
-
+    public boolean restorePage(int x) {
         PageExt p = new PageExt();
 
         try {
-            File f = new File(cv.getExternalCacheDir() + "/" + page + "/data.json");
+            String path = cv.getExternalCacheDir() + "/" + x + "/data.json";
+            Log.e(TAG, "path: " + path);
+            File f = new File(path);
+            if (!f.exists())
+                return true;
+
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
             String json = br.readLine();
 
             JSONObject data = new JSONObject(json);
+            Log.e(TAG, "restorePage: readJSON:" + json);
 
-            File rmain = new File((String) data.get("main_img"));
+            File rmain = new File(data.getString("main_img"));
             p.setMainImg(rmain);
             int rpage = (int) data.get("page");
             p.setPage(rpage);
@@ -512,7 +546,7 @@ public class CfView extends FrameLayout {
 
             File rback = null;
             if (!data.isNull("res_back")) {
-                rback = new File((String) data.get("res_back"));
+                rback = new File(data.getString("res_back"));
             }
             p.setResBack(rback);
 
@@ -550,7 +584,7 @@ public class CfView extends FrameLayout {
         drawList.clear();
         drawSubList.clear();
 
-        page = p.getPage();
+        page = x;
 //        page = 1;
         if (p.getResBack() != null) {
             Log.e(TAG, "restorePage: Back Bitmap Not Null");
@@ -608,7 +642,7 @@ public class CfView extends FrameLayout {
             tv.setNy(res.getY());
             tv.setText(res.getTxt());
             tv.setTextSize(res.getSize());
-            tv.setTypeface(FontBinder.get(res.getFont()), "NanumGothic");
+            tv.setTypeface(FontBinder.get(res.getFont()), res.getFont());
             tv.setTextColor(Color.parseColor(res.getColor()), res.getColor());
             tv = ((MainActivity) cv).setListener(tv);
             addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));

@@ -3,6 +3,7 @@ package cf.connotation.editorview;
 import android.Manifest;
 import android.app.Dialog;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +16,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.widget.LinearLayoutCompat;
@@ -32,6 +34,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.GravityEnum;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.github.nitrico.fontbinder.FontBinder;
 import com.github.nitrico.lastadapter.Holder;
 import com.github.nitrico.lastadapter.ItemType;
@@ -60,6 +64,7 @@ public class MainActivity extends BaseActivity {
     protected ActivityMainBinding binding;
     protected CfView cfv;
     protected LastAdapter adapter;
+    private Context context;
 
     private final String TAG = "MainActivityCf";
 
@@ -76,51 +81,26 @@ public class MainActivity extends BaseActivity {
     private LinearLayout showingView = null;
 
     private int postFlag = 0;
+//    private int moveFlag = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        init();
-
-        cfv.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
-            @Override
-            public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-                if (postFlag < 1) {
-                    cfv.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            cfv.currentShow = getLtoB();
-                            BitmapDrawable bm = new BitmapDrawable(getResources(), cfv.currentShow);
-                            if (showingView == null) {
-                                Toast.makeText(MainActivity.this, "에러", Toast.LENGTH_SHORT).show();
-                                return;
-                            }
-                            showingView.setBackground(bm);
-                            postFlag = 1;
-
-                            new Thread() {
-                                @Override
-                                public void run() {
-                                    while (!this.isInterrupted()) {
-                                        try {
-                                            sleep(1000);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                        Log.e(TAG, "thread: " + postFlag);
-                                        postFlag = postFlag - 1;
-                                        if (postFlag < 1)
-                                            this.interrupt();
-                                    }
-                                }
-                            }.start();
-                        }
-                    });
-                }
+        context = this;
+        try {
+            File dir = getApplicationContext().getExternalCacheDir();
+            if (dir != null && dir.isDirectory()) {
+                deleteDir(dir);
             }
-        });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        init(); // 초기화
+
+        fillThread();
 
         binding.btnStudioMove.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -177,9 +157,9 @@ public class MainActivity extends BaseActivity {
                 tv.setTextSize(binding.btnStudioTextSlidesize.getProgress());
                 Log.e(TAG, "onClick: " + binding.studioSpinner.getSelectedItemPosition());
                 if (binding.studioSpinner.getSelectedItemPosition() == 0) {
-                    tv.setTypeface(FontBinder.get("NanumGothic"), "NanumGothic");
-                } else {
                     tv.setTypeface(FontBinder.get("NanumSquareB"), "NanumSquareB");
+                } else {
+                    tv.setTypeface(FontBinder.get("NanumGothic"), "NanumGothic");
                 }
                 tv.setOnTouchListener(new View.OnTouchListener() {
                     @Override
@@ -230,6 +210,48 @@ public class MainActivity extends BaseActivity {
 
     }
 
+    public void fillThread() {
+        cfv.post(new Runnable() {
+            @Override
+            public void run() {
+                final int x = cfv.getPage();
+                new Thread() {
+                    @Override
+                    public void run() {
+                        while (!this.isInterrupted()) {
+                            try {
+                                if (x != cfv.getPage()) {
+                                    this.interrupt();
+                                }
+
+                                postFlag = postFlag - 1;
+
+                                if (postFlag < 1 && x == cfv.getPage()) {
+                                    cfv.currentShow = getLtoB();
+                                    final BitmapDrawable bm = new BitmapDrawable(getResources(), cfv.currentShow);
+                                    if (showingView == null) {
+                                        Toast.makeText(MainActivity.this, "에러", Toast.LENGTH_SHORT).show();
+                                        return;
+                                    }
+                                    cfv.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            showingView.setBackground(bm);
+                                        }
+                                    });
+                                    postFlag = 3;
+                                }
+                                SystemClock.sleep(1000);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }.start();
+            }
+        });
+    }
+
     private void showXDialog(final TextView tv) {
         LayoutInflater dialog = LayoutInflater.from(this);
         final View dialogLayout = dialog.inflate(R.layout.modi_view, null);
@@ -277,8 +299,8 @@ public class MainActivity extends BaseActivity {
         cfv = binding.cfview;
 
         List<String> data = new ArrayList<>();
-        data.add("NanumGothic");
         data.add("NanumSquareB");
+        data.add("NanumGothic");
         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, data);
         binding.studioSpinner.setAdapter(arrayAdapter);
         binding.studioSpinner.setSelection(0);
@@ -296,7 +318,7 @@ public class MainActivity extends BaseActivity {
                         holder.getBinding().btnPageAdd.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if (cfv.getPage() == 11) {
+                                if (cfv.getLimitPage() > 9) {
                                     Toast.makeText(MainActivity.this, "최대 페이지는 10p입니다", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
@@ -318,20 +340,48 @@ public class MainActivity extends BaseActivity {
                         holder.getBinding().getRoot().setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-                                if (holder.getBinding().getContent().isSeleceted())
+                                final MaterialDialog dialog =
+                                        new MaterialDialog.Builder(context)
+                                                .title("재구성중...")
+                                                .progress(true, 0)
+                                                .contentGravity(GravityEnum.CENTER)
+                                                .canceledOnTouchOutside(false)
+                                                .cancelable(false)
+                                                .show();
+
+                                if (holder.getBinding().getContent().isSeleceted()) {
+                                    dialog.dismiss();
                                     return;
-                                showingView = holder.getBinding().show;
-                                for (int i = 0; i < cfv.getPag().arr.size(); i++) {
-                                    Object o = cfv.getPag().arr.get(i);
-                                    if (o instanceof Page) {
-                                        Page p = (Page) o;
-                                        p.setSeleceted(false);
-                                    }
                                 }
-                                cfv.movePage(holder.getBinding().getPosition() + 1);        // X 페이지로 이동
-                                holder.getBinding().getContent().setSeleceted(true);
-                                ((Page) cfv.getPag().arr.get(holder.getBinding().getPosition())).setSeleceted(true);
-                                adapter.notifyDataSetChanged();
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            SystemClock.sleep(500);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                showingView = holder.getBinding().show;
+                                                for (int i = 0; i < cfv.getPag().arr.size(); i++) {
+                                                    Object o = cfv.getPag().arr.get(i);
+                                                    if (o instanceof Page) {
+                                                        Page p = (Page) o;
+                                                        p.setSeleceted(false);
+                                                    }
+                                                }
+                                                cfv.movePage(holder.getBinding().getPosition() + 1);        // X 페이지로 이동
+                                                holder.getBinding().getContent().setSeleceted(true);
+                                                ((Page) cfv.getPag().arr.get(holder.getBinding().getPosition())).setSeleceted(true);
+                                                adapter.notifyDataSetChanged();
+                                                dialog.dismiss();
+                                                Log.e(TAG, "run: " + cfv.getChildCount());
+                                            }
+                                        });
+                                    }
+                                }).start();
                             }
                         });
                     }
@@ -462,6 +512,8 @@ public class MainActivity extends BaseActivity {
                 cfv.addDrawCard(layout, null, b);
             } else {
                 Bitmap b = getBitmap(getContentResolver(), uri);
+                b = Bitmap.createScaledBitmap(b, cfv.getMeasuredWidth(), cfv.getMeasuredHeight(), true);
+
                 cfv.setCardBackground(b);
             }
         } else {
@@ -492,7 +544,7 @@ public class MainActivity extends BaseActivity {
      */
 
     public Bitmap getLtoB() {   // LinearLayout to Bitmap
-        Bitmap snapshot = Bitmap.createBitmap(cfv.getWidth(), cfv.getHeight(), Bitmap.Config.ARGB_8888);
+        Bitmap snapshot = Bitmap.createBitmap(cfv.getMeasuredWidth(), cfv.getMeasuredHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(snapshot);
         cfv.draw(canvas);
         return snapshot;
@@ -557,6 +609,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public InText setListener(final InText tv) {
+
         tv.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
