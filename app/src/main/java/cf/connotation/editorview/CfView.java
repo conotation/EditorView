@@ -341,7 +341,7 @@ public class CfView extends FrameLayout {
         // TODO v2 재구축 필요
         setFlag(false);
         ((MainActivity) cv).changeForm();
-        Log.e(TAG, "movePage: " + page );
+        Log.e(TAG, "movePage: what is now page? " + page);
         pag.modPagePM(new Page(cardList, drawList, drawSubList, back_resource, page, createIndiFormat()));
         if (!killChild()) {
             Toast.makeText(cv, "버그 발생", Toast.LENGTH_SHORT).show();
@@ -527,9 +527,12 @@ public class CfView extends FrameLayout {
         try {
             String path = cv.getExternalCacheDir() + "/" + x + "/data.json";
             Log.e(TAG, "path: " + path);
+            page = x;
             File f = new File(path);
-            if (!f.exists())
+            if (!f.exists()) {
+                f.mkdir();
                 return true;
+            }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
             String json = br.readLine();
@@ -584,7 +587,6 @@ public class CfView extends FrameLayout {
         drawList.clear();
         drawSubList.clear();
 
-        page = x;
 //        page = 1;
         if (p.getResBack() != null) {
             Log.e(TAG, "restorePage: Back Bitmap Not Null");
@@ -648,6 +650,7 @@ public class CfView extends FrameLayout {
             addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 
+        Log.e(TAG, "restorePage: what is now page?_2 " + page);
 
         return true;
     }
