@@ -4,7 +4,7 @@ android {
     compileSdkVersion 26
     buildToolsVersion "26"
     defaultConfig {
-        applicationId "cfv.connotation.editorview"
+        applicationId "cfv.connotzation.editorview"
         minSdkVersion 19
         targetSdkVersion 26
         versionCode 1
