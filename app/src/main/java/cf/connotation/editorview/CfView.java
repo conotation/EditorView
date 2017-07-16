@@ -426,7 +426,11 @@ public class CfView extends FrameLayout {
             Log.e(TAG, "createIndiFormat: path: " + path);
             Log.e(TAG, "createIndiFormat: createJSON:" + data.toString());
             try (PrintWriter out = new PrintWriter(path, "UTF-8")) {
-                out.write(data.toString());
+                try {
+                    out.write(data.toString());
+                } finally {
+                    out.close();
+                }
             }
         } catch (JSONException | IOException e) {
             e.printStackTrace();
@@ -506,9 +510,14 @@ public class CfView extends FrameLayout {
             f.createNewFile();
             out = new FileOutputStream(f);
             b.compress(Bitmap.CompressFormat.PNG, 100, out);
-            out.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                out.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return f;
     }
@@ -531,11 +540,16 @@ public class CfView extends FrameLayout {
             File f = new File(path);
             if (!f.exists()) {
                 f.mkdir();
+                cardList.clear();
+                drawList.clear();
+                drawSubList.clear();
+                back_resource = null;
                 return true;
             }
 
             BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(f)));
             String json = br.readLine();
+            br.close();
 
             JSONObject data = new JSONObject(json);
             Log.e(TAG, "restorePage: readJSON:" + json);
