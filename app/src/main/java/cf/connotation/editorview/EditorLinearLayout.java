@@ -8,16 +8,16 @@ import android.util.AttributeSet;
  * Created by Conota on 2017-07-13.
  */
 
-public class LinearLayout extends android.widget.LinearLayout {
-    public LinearLayout(Context context) {
+public class EditorLinearLayout extends android.widget.LinearLayout {
+    public EditorLinearLayout(Context context) {
         super(context);
     }
 
-    public LinearLayout(Context context, @Nullable AttributeSet attrs) {
+    public EditorLinearLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public LinearLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public EditorLinearLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
     }
 }

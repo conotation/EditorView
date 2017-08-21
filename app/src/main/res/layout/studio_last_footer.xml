@@ -5,7 +5,7 @@
 
         <variable
             name="activity"
-            type="cf.connotation.editorview.MainActivity" />
+            type="cf.connotation.editorview.EditorMainActivity" />
     </data>
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="90dp"

@@ -1,3 +1,4 @@
 # EditorView (Dev) 
 
- - 2017 ¸ğ¹ÙÀÏ ÄÁÅÙÃ÷ °æÁø´ëÈ¸ ³»ºÎ Editor ºä °³¹ß
+ - 2017 ëª¨ë°”ì¼ ì»¨í…ì¸  ê²½ì§„ëŒ€íšŒ ë‚´ë¶€ Editor ë·° ê°œë°œ <çµ‚>
+ - Last Version: https://github.com/clik-labs/cardline_android

@@ -56,11 +56,11 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 /**
- * - MainActivity
+ * - EditorMainActivity
  * - 에디터
  */
 
-public class MainActivity extends BaseActivity {
+public class EditorMainActivity extends EditorBaseActivity {
     protected ActivityMainBinding binding;
     protected CfView cfv;
     protected LastAdapter adapter;
@@ -192,9 +192,9 @@ public class MainActivity extends BaseActivity {
             public void onClick(View view) {
                 int cv = cfv.getCVInstance();
                 if (cv == -1)
-                    Toast.makeText(MainActivity.this, "카드를 선택해주세요", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditorMainActivity.this, "카드를 선택해주세요", Toast.LENGTH_SHORT).show();
                 else if (cv == 0)
-                    Toast.makeText(MainActivity.this, "텍스트의 색을 바꾸는 기능입니다", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditorMainActivity.this, "텍스트의 색을 바꾸는 기능입니다", Toast.LENGTH_SHORT).show();
                 else {
                     cfv.changeColor(_current_color);
                 }
@@ -230,7 +230,7 @@ public class MainActivity extends BaseActivity {
                                     cfv.currentShow = getLtoB();
                                     final BitmapDrawable bm = new BitmapDrawable(getResources(), cfv.currentShow);
                                     if (showingView == null) {
-                                        Toast.makeText(MainActivity.this, "에러", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(EditorMainActivity.this, "에러", Toast.LENGTH_SHORT).show();
                                         return;
                                     }
                                     cfv.post(new Runnable() {
@@ -314,12 +314,12 @@ public class MainActivity extends BaseActivity {
                     @Override
                     public void onBind(Holder<StudioLastFooterBinding> holder) {
                         super.onBind(holder);
-                        holder.getBinding().setActivity(MainActivity.this);
+                        holder.getBinding().setActivity(EditorMainActivity.this);
                         holder.getBinding().btnPageAdd.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
                                 if (cfv.getLimitPage() > 4) {
-                                    Toast.makeText(MainActivity.this, "최대 페이지는 5p입니다", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(EditorMainActivity.this, "최대 페이지는 5p입니다", Toast.LENGTH_SHORT).show();
                                     return;
                                 }
                                 addPage();
@@ -398,7 +398,7 @@ public class MainActivity extends BaseActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            MainActivity.super.onBackPressed();
+                            EditorMainActivity.super.onBackPressed();
                         }
                     }, getString(R.string.label_ok), null, getString(R.string.label_cancel));
         }
@@ -530,12 +530,12 @@ public class MainActivity extends BaseActivity {
             options.setCompressionFormat(Bitmap.CompressFormat.PNG);
             uCrop = uCrop.withOptions(options);
 
-            uCrop.start(MainActivity.this);
+            uCrop.start(EditorMainActivity.this);
         } else {
             UCrop uCrop = UCrop.of(uri, Uri.fromFile(new File(getCacheDir(), destinationFileName)));
             uCrop = uCrop.withAspectRatio(1, 1);
 
-            uCrop.start(MainActivity.this);
+            uCrop.start(EditorMainActivity.this);
         }
     }
 

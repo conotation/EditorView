@@ -184,7 +184,7 @@ public class CfView extends FrameLayout {
                 break;
         }
 
-        currentShow = ((MainActivity) cv).getLtoB();
+        currentShow = ((EditorMainActivity) cv).getLtoB();
         return true;
     }
 
@@ -320,7 +320,7 @@ public class CfView extends FrameLayout {
                     public void onClick(DialogInterface dialog, int selectedColor, Integer[] allColors) {
                         h.setColor(Integer.toHexString(selectedColor));
                         Log.e(TAG, "onClick: " + Integer.toHexString(selectedColor) + " / / / " + h.getColor());
-                        ((MainActivity) cv).setCurrentColor(h.getColor());
+                        ((EditorMainActivity) cv).setCurrentColor(h.getColor());
                         ((InText) currentView).setTextColor(Color.parseColor(h.getColor()), h.getColor());
 
                         dialog.dismiss();
@@ -340,7 +340,7 @@ public class CfView extends FrameLayout {
         // TODO 페이지 이동 구현
         // TODO v2 재구축 필요
         setFlag(false);
-        ((MainActivity) cv).changeForm();
+        ((EditorMainActivity) cv).changeForm();
         Log.e(TAG, "movePage: what is now page? " + page);
         pag.modPagePM(new Page(cardList, drawList, drawSubList, back_resource, page, createIndiFormat()));
         if (!killChild()) {
@@ -353,7 +353,7 @@ public class CfView extends FrameLayout {
             setEraseBackground(bitTemp);
         }
         Toast.makeText(cv, "" + (restorePage(x) ? "완료" : "실패"), Toast.LENGTH_SHORT).show();
-        ((MainActivity) cv).fillThread();
+        ((EditorMainActivity) cv).fillThread();
     }
 
     public boolean killChild() {
@@ -660,7 +660,7 @@ public class CfView extends FrameLayout {
             tv.setTextSize(res.getSize());
             tv.setTypeface(FontBinder.get(res.getFont()), res.getFont());
             tv.setTextColor(Color.parseColor(res.getColor()), res.getColor());
-            tv = ((MainActivity) cv).setListener(tv);
+            tv = ((EditorMainActivity) cv).setListener(tv);
             addCard(tv, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         }
 

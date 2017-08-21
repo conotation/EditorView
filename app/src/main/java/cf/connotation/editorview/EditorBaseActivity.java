@@ -12,7 +12,7 @@ import android.support.v7.app.AppCompatActivity;
  * <p>
  * thx Oleksii Shliama
  */
-public class BaseActivity extends AppCompatActivity {
+public class EditorBaseActivity extends AppCompatActivity {
 
     protected static final int REQUEST_STORAGE_READ_ACCESS_PERMISSION = 101;
 
@@ -32,7 +32,7 @@ public class BaseActivity extends AppCompatActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            ActivityCompat.requestPermissions(BaseActivity.this,
+                            ActivityCompat.requestPermissions(EditorBaseActivity.this,
                                     new String[]{permission}, requestCode);
                         }
                     }, getString(R.string.label_ok), null, getString(R.string.label_cancel));
